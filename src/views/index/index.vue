@@ -368,7 +368,7 @@
 					addOrderType: 'wx',
 					userid: this.userid,
 					parkList: JSON.stringify(this.selectParams),
-					paywaycode: 2,
+					paywaycode: 0,
 					cardnumber: ''
 				}
 				return data
