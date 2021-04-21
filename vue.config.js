@@ -10,6 +10,14 @@ let PROXY = {
                 '^/api/court': ''
             }
         },
+        '/api/chinaCourt': {
+            target: 'http://ntc.chinaopen.com',
+            ws: true,
+            changeOrigin: false,
+            pathRewrite: {
+                '^/api/chinaCourt': ''
+            }
+        },
     },
     // Cookie: JSESSIONID=3FE4CA6F5E7947A6B18CF38D6179C41B; openid=o6sCqt1Hh1cyTrW35LwtdtVOSTxk
     // http://ntc.chinaopen.com/TennisCenterInterface/umUser/getUserInfoByOpenid.action

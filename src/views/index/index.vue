@@ -3,8 +3,10 @@
     <div class='page-index'>
 		<div class="area-box">
 			<van-button class="order-btn" type="primary" @click="orderCourt" block :disabled="orderDisabled">预定</van-button>
-			<van-button class="order-btn" type="primary" @click="orderCourtInterval" block >开始预定</van-button>
+			<van-button class="order-btn" type="primary" @click="orderCourtInterval" block >定时预定</van-button>
+			<van-button class="order-btn" type="primary" @click="orderCourtImmdia" block >立即预定</van-button>
 		</div>
+		<div class="time-area"></div>
         <div class="date-box">
             <van-grid :column-num="4">
                 <van-grid-item v-for="(v, i) in dateNav" :key="i" :class="{'selected': selectDateVal == i}" @click="changeSelect(i)">
@@ -72,6 +74,17 @@
         },
         data() {
             return {
+				timeNow: {
+					h: null,
+					m: null,
+					s: null,
+				},
+				orderStatus: false,
+				startTime: {
+					h: null,
+					m: null,
+					s: null,
+				},
 				weekData: [
 					"周日", "周一", "周二", "周三", "周四", "周五", "周六"
 				],
@@ -173,17 +186,31 @@
 				})
 				return promise
 			},
-			setTimeToOrder(startH, startM){
-				startH = startH === undefined ? 23 : startH
-				startM = startM === undefined ? 15 : startM
+			setTimeToOrder(startH, startM, startS){
+				startH = startH === undefined ? 0 : startH
+				startM = startM === undefined ? 0 : startM
+				startS = startS === undefined ? 1 : startS
+				console.log(startH, startM, startS)
+				this.startTime = {
+					h: startH,
+					m: startM,
+					s: startS,
+				}
 				let t = 0, ts = 200
 				let promise = new Promise(success => {
+					this.orderStatus = true
 					let interval = setInterval(() => {
 						let time = new Date()
 						let hour = time.getHours()
 						let min = time.getMinutes()
 						let second = time.getSeconds()
-						if(hour == startH && min == startM){
+						if(hour == startH && min == startM && second == startS){
+							this.orderStatus = false
+							this.startTime = {
+								h: null,
+								m: null,
+								s: null
+							}
 							clearInterval(interval)
 							success()
 						}
@@ -197,9 +224,17 @@
 				})
 				return promise
 			},
+			async orderCourtImmdia(){
+				let requestList = this.createOrderList() || []
+				if(!requestList.length){
+					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
+					return
+				}
+				this.orderCourtIntervalAction(requestList)
+			},
 			async orderCourtInterval(){
-				// await this.setTimeToOrder(0, 0)
-				// console.log('start order')
+				await this.setTimeToOrder(0, 0, 0)
+				console.log('start order')
 				let requestList = this.createOrderList() || []
 				if(!requestList.length){
 					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
@@ -213,12 +248,19 @@
 				let timeBefore = parseInt((new Date()).getTime())
 				let split = 1000
 				let data = list[index]
-				if(!data) return
+				if(!data){
+					console.log('结束')
+					this._errorHandle.handleRes({respMsg: '未预定到场地'})
+					return
+				}
 				console.log(data)
 				let res = await this._court.orderCourt(data)
 				console.log(res)
-				if(res){
-					this._errorHandle.handleRes({respMsg: '预定成功'})
+				// 1072 -- 已预定2小时
+				if(res && res.respCode == 1072){
+					console.log('已锁定或预定2小时')
+					this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
+					// this._errorHandle.handleRes(res)
 					return
 				}
 				let timeAfter = parseInt((new Date()).getTime())
@@ -229,7 +271,7 @@
 				this.orderCourtIntervalAction(list, index)
 			},
 			createOrderList(){
-				let minTime = 13, maxTime = 21
+				let minTime = 19, maxTime = 20
 				let disabledCourtId = 38
 				let list = this.courtContent || []
 				let date = this.selectDateData
@@ -246,7 +288,7 @@
 						rd.push({
 							addOrderType: 'wx',
 							userid: this.userid,
-							paywaycode: 2,
+							paywaycode: 0,
 							cardnumber: '',
 							parkList: JSON.stringify([
 								{
@@ -276,11 +318,26 @@
 			}
         },
         created() {
-
+			// setInterval(() => {
+			// 	let t = new Date()
+			// 	this.timeNow = {
+			// 		h: t.getHours(),
+			// 		m: t.getMinutes(),
+			// 		s: t.getSeconds(),
+			// 	}
+			// }, 500);
         },
         components: {
         },
         computed: {
+			// remainTime(){
+			// 	let timeNow = this.timeNow
+			// 	let start = this.startTime
+			// 	if()
+			// 	let remain = {
+			// 		h: 
+			// 	}
+			// },
 			orderDisabled(){
 				return this.selectCourtData.length <= 0
 			},

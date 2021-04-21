@@ -7,6 +7,7 @@ axios.defaults.withCredentials = true
 export default class http{
     constructor(){
         this.api = '/api/court'
+        // this.api = '/api/chinaCourt'
         this.errorObj = new errorHandle()
         this.defaultCookie = ['openid=oR_qexL17fcNPVkLyzOKOdpucCQc']
         this._dataType = new dataType()

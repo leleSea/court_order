@@ -1,9 +1,11 @@
 import localData from '../localData'
 import dataType from '../dataType'
 import http from '../http'
+import errorHandle from '../errorHandle'
 
 export default class court{
     constructor(){
+        this._errorHandle = new errorHandle()
         this._localData = new localData()
         this._dataType = new dataType()
         this._http = new http()
@@ -33,12 +35,12 @@ export default class court{
             },
             {
                 name: 'D场',
-                vid: 9,
+                vid: 3,
                 parktypeinfo: 3
             },
             {
                 name: 'F场',
-                vid: 10,
+                vid: 6,
                 parktypeinfo: 3
             },
             {
@@ -86,9 +88,13 @@ export default class court{
             method: 'POST'
         }
         let res = await this._http.request('court', options)
+        // if(res && res.respCode == '1001'){
+        //     return res.datas
+        // }
+        // return false
         if(res && res.respCode == '1001'){
-            return res.datas
+            this._errorHandle.notifySuccess({respMsg: '预定成功'})
         }
-        return false
+        return res
     }
 }

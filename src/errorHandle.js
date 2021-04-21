@@ -16,4 +16,8 @@ export default class errorHandle{
         if(!msg) return
         this._Notify({ type: 'danger', message: msg });
     }
+    notifySuccess(res){
+        let msg = res.respMsg || '成功'
+        this._Notify({ type: 'success', message: msg });
+    }
 }
