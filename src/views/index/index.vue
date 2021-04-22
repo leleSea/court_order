@@ -136,8 +136,7 @@
 				this.$nextTick(() => {
 					console.log(this.currentPark)
 					console.log(this.courtTimeList)
-					this.createOrderList()
-					this.createOrderListNew(13, 21)
+					this.createOrderListNew()
 				})
 			},
 			selectCourt(court, courtPar){
@@ -228,7 +227,7 @@
 				return promise
 			},
 			async orderCourtImmdia(){
-				let requestList = this.createOrderList() || []
+				let requestList = this.createOrderListNew() || []
 				if(!requestList.length){
 					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
 					return
@@ -238,7 +237,7 @@
 			async orderCourtInterval(){
 				await this.setTimeToOrder(0, 0, 0)
 				console.log('start order')
-				let requestList = this.createOrderList() || []
+				let requestList = this.createOrderListNew() || []
 				if(!requestList.length){
 					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
 					return
@@ -249,7 +248,7 @@
 				list = list || []
 				index = index || 0
 				let timeBefore = parseInt((new Date()).getTime())
-				let split = 1000
+				let split = 300
 				let data = list[index]
 				if(!data){
 					console.log('结束')
@@ -263,7 +262,6 @@
 				if(res && res.respCode == 1072){
 					console.log('已锁定或预定2小时')
 					this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
-					// this._errorHandle.handleRes(res)
 					return
 				}
 				let timeAfter = parseInt((new Date()).getTime())
@@ -351,8 +349,8 @@
 							userid: this.userid,
 							paywaycode: 0,
 							cardnumber: '',
-							// parkList: JSON.stringify(parkList)
-							parkList: parkList
+							parkList: JSON.stringify(parkList)
+							// parkList: parkList
 						})
 					}
 				}
