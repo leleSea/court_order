@@ -74,6 +74,8 @@
         },
         data() {
             return {
+				minTime: 19,
+				maxTime: 20,
 				timeNow: {
 					h: null,
 					m: null,
@@ -135,6 +137,7 @@
 					console.log(this.currentPark)
 					console.log(this.courtTimeList)
 					this.createOrderList()
+					this.createOrderListNew(13, 21)
 				})
 			},
 			selectCourt(court, courtPar){
@@ -275,7 +278,7 @@
 				let disabledCourtId = 38
 				let list = this.courtContent || []
 				let date = this.selectDateData
-				if(!list,length) return
+				if(!list.length) return
 				console.log(list)
 				let rd = []
 				for(var i in list){
@@ -310,7 +313,52 @@
 				console.log(rd)
 				return rd
 			},
-
+			createOrderListNew(minTime, maxTime){
+				minTime = minTime || this.minTime, maxTime = maxTime || this.maxTime
+				let orderNum = 2
+				if(maxTime == minTime) orderNum = 1
+				let disabledCourtId = 38
+				let list = this.courtContent || []
+				let date = this.selectDateData
+				if(!list.length) return
+				console.log(list)
+				let rd = []
+				let timeList = list[0].reserve
+				for(var j = 0; j < timeList.length; j = j + orderNum){
+					for(var i in list){
+						if(list[i].id == disabledCourtId) continue
+						let parkList = []
+						let tem = list[i].reserve[j]
+						if(!tem || tem.time < minTime || tem.time > maxTime) continue
+						parkList.push({
+							time: tem.time,
+							parkname: list[i].parkname,
+							date: `${date.year}-${date.month}-${date.day}`,
+							parkid: list[i].id
+						})
+						if(orderNum > parkList.length){
+							tem = list[i].reserve[j + 1]
+							if(!tem || tem.time < minTime || tem.time > maxTime) continue
+							parkList.push({
+								time: tem.time,
+								parkname: list[i].parkname,
+								date: `${date.year}-${date.month}-${date.day}`,
+								parkid: list[i].id
+							})
+						}
+						rd.push({
+							addOrderType: 'wx',
+							userid: this.userid,
+							paywaycode: 0,
+							cardnumber: '',
+							// parkList: JSON.stringify(parkList)
+							parkList: parkList
+						})
+					}
+				}
+				console.log(rd)
+				return rd
+			},
 			courtAreaChange(val){
 				console.log(val)
 				console.log('courtAreaChange')
