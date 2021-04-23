@@ -134,14 +134,10 @@
 
 				console.log(res)
 				this.$nextTick(() => {
-					console.log(this.currentPark)
-					console.log(this.courtTimeList)
-					this.createOrderListNew()
+					this.createOrderListControl()
 				})
 			},
 			selectCourt(court, courtPar){
-				console.log(court)
-				console.log(courtPar)
 				if(!court || court.bookstatus != 0) return
 				let list = this.selectCourtData
 				let f = null
@@ -151,7 +147,6 @@
 						break
 					}
 				}
-				console.log(f)
 				if(f === null){
 					if(this.selectCourtData.length >= this.maxOrderNum){
 						this._errorHandle.handleRes({respMsg: '最多只能选择两片'})
@@ -161,14 +156,11 @@
 						court: court,
 						courtPar: courtPar
 					})
-					console.log(this.selectCourtData)
-					console.log(this.selectCourtDataObj)
 					return
 				}
 				this.selectCourtData.splice(f, 1)
 			},
 			async orderCourt(){
-				console.log('orderCourt')
 				if(this.orderDisabled) return
 				let params = this.orderParams
 				console.log(params)
@@ -227,7 +219,7 @@
 				return promise
 			},
 			async orderCourtImmdia(){
-				let requestList = this.createOrderListNew() || []
+				let requestList = this.createOrderListControl() || []
 				if(!requestList.length){
 					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
 					return
@@ -237,7 +229,7 @@
 			async orderCourtInterval(){
 				await this.setTimeToOrder(0, 0, 0)
 				console.log('start order')
-				let requestList = this.createOrderListNew() || []
+				let requestList = this.createOrderListControl() || []
 				if(!requestList.length){
 					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
 					return
@@ -247,8 +239,8 @@
 			async orderCourtIntervalAction(list, index){
 				list = list || []
 				index = index || 0
-				let timeBefore = parseInt((new Date()).getTime())
-				let split = 300
+				// let timeBefore = parseInt((new Date()).getTime())
+				// let split = 300
 				let data = list[index]
 				if(!data){
 					console.log('结束')
@@ -264,10 +256,9 @@
 					this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
 					return
 				}
-				let timeAfter = parseInt((new Date()).getTime())
-				let t = split - (timeAfter - timeBefore)
-				console.log(t)
-				await this.timeoutPromise(t)
+				// let timeAfter = parseInt((new Date()).getTime())
+				// let t = split - (timeAfter - timeBefore)
+				// await this.timeoutPromise(t)
 				index++
 				this.orderCourtIntervalAction(list, index)
 			},
@@ -277,7 +268,6 @@
 				let list = this.courtContent || []
 				let date = this.selectDateData
 				if(!list.length) return
-				console.log(list)
 				let rd = []
 				for(var i in list){
 					if(list[i].id == disabledCourtId) continue
@@ -308,18 +298,33 @@
 						})
 					}
 				}
-				console.log(rd)
 				return rd
 			},
-			createOrderListNew(minTime, maxTime){
+
+			createOrderListControl(minTime, maxTime,){
+				let list = this.courtInfo || {}
+				list = list.venList || []
+				console.log(list)
+				if(!list.length) return
+				let data = []
+				for(var i in list){
+					console.log(list[i])
+					let tem = this.createOrderListNew(minTime, maxTime, list[i].park)
+					tem = tem.concat(data)
+					data = tem
+					// data = data.concat(this.createOrderListNew(minTime, maxTime, list[i].park))
+				}
+				console.log(data)
+				return data
+			},
+			createOrderListNew(minTime, maxTime, list){
 				minTime = minTime || this.minTime, maxTime = maxTime || this.maxTime
 				let orderNum = 2
 				if(maxTime == minTime) orderNum = 1
 				let disabledCourtId = 38
-				let list = this.courtContent || []
+				list = list || this.courtContent || []
 				let date = this.selectDateData
 				if(!list.length) return
-				console.log(list)
 				let rd = []
 				let timeList = list[0].reserve
 				for(var j = 0; j < timeList.length; j = j + orderNum){
@@ -354,12 +359,9 @@
 						})
 					}
 				}
-				console.log(rd)
 				return rd
 			},
-			courtAreaChange(val){
-				console.log(val)
-				console.log('courtAreaChange')
+			courtAreaChange(){
 				this.courtListInit()
 			}
         },
@@ -439,7 +441,6 @@
 						break
 					}
 				}
-				console.log(rd)
 				return rd || {}
 			},
 			courtContent(){
@@ -457,13 +458,11 @@
 				for(var i in park){
 					rd.push(park[i].time)
 				}
-				console.log(rd)
 				return rd
 
 			},
 			parktypeinfo(){
 				let data = this.courtAreaSelectData
-				console.log(data)
 				return data.parktypeinfo
 			},
 			courtListParams(){
@@ -524,7 +523,6 @@
 					i++
 					i = i % weekData.length
 				}
-				console.log(list)
 				return list
 			},
 		},
