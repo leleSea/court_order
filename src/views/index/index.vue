@@ -2,9 +2,11 @@
 <template>
     <div class='page-index'>
 		<div class="area-box">
-			<van-button class="order-btn" type="primary" @click="orderCourt" block :disabled="orderDisabled">预定</van-button>
+			<van-button class="order-btn order-spec" type="primary" @click="orderCourt" block :disabled="orderDisabled">预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderCourtInterval" block >定时预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderCourtImmdia" block >立即预定</van-button>
+			<!-- <van-button class="order-btn" type="primary" @click="orderCourtImmdia" block >谨慎预定</van-button> -->
+			<van-button class="order-btn" type="primary" @click="orderStop" block >停止</van-button>
 		</div>
 		<div class="time-area"></div>
         <div class="date-box">
@@ -74,8 +76,9 @@
         },
         data() {
             return {
-				minTime: 19,
-				maxTime: 20,
+				orderStart: false,
+				minTime: 12,
+				maxTime: 13,
 				timeNow: {
 					h: null,
 					m: null,
@@ -99,6 +102,7 @@
 				courtInfo: {},
 				selectCourtData: [],
 				maxOrderNum: 2,
+				paywaycode: 0,
 				extendG: [{"park":[{"id":40,"venuesid":11,"parkname":"G3草地","parkcode":null,"address":null,"remark":null,"parkstatus":0,"createuserid":null,"createtime":null,"deleteflag":0,"parktypeid":4,"sort":63,"parktypeinfo":null,"reserve":[{"detailid":"","time":7,"fixedflag":0,"interval":[],"bookmoney":90,"userid":"18267","bookstatus":1,"orderno":""},{"detailid":"","time":8,"fixedflag":0,"interval":[],"bookmoney":90,"userid":"18267","bookstatus":1,"orderno":""},{"detailid":"","time":9,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"25645","bookstatus":1,"orderno":""},{"detailid":"","time":10,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"25645","bookstatus":1,"orderno":""},{"detailid":"","time":11,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":12,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"16232","bookstatus":1,"orderno":""},{"detailid":"","time":13,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"20553","bookstatus":1,"orderno":""},{"detailid":"","time":14,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"20553","bookstatus":1,"orderno":""},{"detailid":"","time":15,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"14412","bookstatus":1,"orderno":""},{"detailid":"","time":16,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"14412","bookstatus":1,"orderno":""},{"detailid":"","time":17,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":18,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":19,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"14938","bookstatus":1,"orderno":""},{"detailid":"","time":20,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"14938","bookstatus":1,"orderno":""},{"detailid":"","time":21,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":22,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""}],"inOrOut":null},{"id":55,"venuesid":11,"parkname":"G4草地","parkcode":null,"address":null,"remark":null,"parkstatus":0,"createuserid":null,"createtime":null,"deleteflag":0,"parktypeid":4,"sort":64,"parktypeinfo":null,"reserve":[{"detailid":"","time":7,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":8,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":9,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"21816","bookstatus":1,"orderno":""},{"detailid":"","time":10,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"21816","bookstatus":1,"orderno":""},{"detailid":"","time":11,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"23592","bookstatus":1,"orderno":""},{"detailid":"","time":12,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"17357","bookstatus":1,"orderno":""},{"detailid":"","time":13,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"17357","bookstatus":1,"orderno":""},{"detailid":"","time":14,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"16061","bookstatus":1,"orderno":""},{"detailid":"","time":15,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"29268","bookstatus":1,"orderno":""},{"detailid":"","time":16,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"29268","bookstatus":1,"orderno":""},{"detailid":"","time":17,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"18649","bookstatus":1,"orderno":""},{"detailid":"","time":18,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"18649","bookstatus":1,"orderno":""},{"detailid":"","time":19,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":20,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":21,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":22,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""}],"inOrOut":null},{"id":56,"venuesid":11,"parkname":"G5草地","parkcode":null,"address":null,"remark":null,"parkstatus":0,"createuserid":null,"createtime":null,"deleteflag":0,"parktypeid":4,"sort":65,"parktypeinfo":null,"reserve":[{"detailid":"","time":7,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":8,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":9,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"20668","bookstatus":1,"orderno":""},{"detailid":"","time":10,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"20668","bookstatus":1,"orderno":""},{"detailid":"","time":11,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":12,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":13,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":14,"fixedflag":0,"interval":[],"bookmoney":90,"userid":"24791","bookstatus":1,"orderno":""},{"detailid":"","time":15,"fixedflag":0,"interval":[],"bookmoney":90,"userid":"24791","bookstatus":1,"orderno":""},{"detailid":"","time":16,"fixedflag":0,"interval":[],"bookmoney":120,"userid":"27718","bookstatus":1,"orderno":""},{"detailid":"","time":17,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"22621","bookstatus":1,"orderno":""},{"detailid":"","time":18,"fixedflag":0,"interval":[],"bookmoney":70,"userid":"14894","bookstatus":1,"orderno":""},{"detailid":"","time":19,"fixedflag":0,"interval":[],"bookmoney":100,"userid":"24727","bookstatus":1,"orderno":""},{"detailid":"","time":20,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":21,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""},{"detailid":"","time":22,"fixedflag":0,"interval":[],"bookmoney":0,"userid":"","bookstatus":2,"orderno":""}],"inOrOut":null}],"vid":11,"vname":"G场"}]
             };
         },						
@@ -219,13 +223,40 @@
 				})
 				return promise
 			},
-			async orderCourtImmdia(){
+			async orderCourtAs(){
 				let requestList = this.createOrderListControl() || []
 				if(!requestList.length){
 					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
 					return
 				}
+				this.orderCourtACH(requestList)
+			},
+			async orderCourtImmdia(){
+				// let requestList = this.createOrderListControl() || []
+
+
+				let requestList = this.createOrderListNew(null, null, this.courtContent)
+				console.log(requestList)
+				if(!requestList.length){
+					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
+					return
+				}
+				this.orderStart = true
 				this.orderCourtIntervalAction(requestList)
+
+
+				// let opt = {
+				// 	addOrderType: "wx",
+				// 	cardnumber: "",
+				// 	mobile: "",
+				// 	ordercode: "",
+				// 	parkList: JSON.stringify([{"time":19,"parkname":"K11","date":"2021-05-15","parkid":76},{"time":20,"parkname":"K11","date":"2021-05-15","parkid":76}]),
+				// 	paywaycode: this.paywaycode,
+				// 	userid: 12765
+				// }
+				// console.log(opt)
+				// let res = await this._court.orderCourt(opt)
+				// console.log(res)
 			},
 			async orderCourtInterval(){
 				await this.setTimeToOrder(0, 0, 0)
@@ -235,19 +266,23 @@
 					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
 					return
 				}
+				this.orderStart = true
 				setTimeout(() => {
 					this.orderCourtIntervalAction(requestList)
-				}, 300);
+				}, 100);
 			},
-			// async orderCourtIntervalAction(list, index){
+			// async orderCourtIntervalAction(list){
+			// 	if(!this.orderStart) return
 			// 	list = list || []
-			// 	index = index || 0
-			// 	// let timeBefore = parseInt((new Date()).getTime())
-			// 	// let split = 300
+			// 	let index = this.randomNum(0, list.length - 1)
+			// 	let timeBefore = parseInt((new Date()).getTime())
+			// 	let split = 1000
 			// 	let data = list[index]
-			// 	if(!data){
+			// 	console.log(JSON.parse(JSON.stringify(list)))
+			// 	if(!data || !list.length){
 			// 		console.log('结束')
 			// 		this._errorHandle.handleRes({respMsg: '未预定到场地'})
+			// 		this.orderStart = false
 			// 		return
 			// 	}
 			// 	console.log(data)
@@ -257,42 +292,58 @@
 			// 	if(res && res.respCode == 1072){
 			// 		console.log('已锁定或预定2小时')
 			// 		this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
+			// 		this.orderStart = false
 			// 		return
 			// 	}
-			// 	// let timeAfter = parseInt((new Date()).getTime())
-			// 	// let t = split - (timeAfter - timeBefore)
-			// 	// await this.timeoutPromise(t)
-			// 	index++
-			// 	this.orderCourtIntervalAction(list, index)
+			// 	let timeAfter = parseInt((new Date()).getTime())
+			// 	let t = split - (timeAfter - timeBefore)
+			// 	await this.timeoutPromise(t)
+			// 	if(this._dataType.isObject(res) && res.respCode != 1071){
+			// 		list.splice(index, 1)
+			// 	}
+			// 	this.orderCourtIntervalAction(list)
 			// },
 			async orderCourtIntervalAction(list){
+				if(!this.orderStart) return
 				list = list || []
-				let index = this.randomNum(0, list.length - 1)
-				let timeBefore = parseInt((new Date()).getTime())
+				let index = 0
 				let split = 1000
 				let data = list[index]
 				console.log(JSON.parse(JSON.stringify(list)))
-				console.log(index)
 				if(!data || !list.length){
 					console.log('结束')
 					this._errorHandle.handleRes({respMsg: '未预定到场地'})
+					this.orderStart = false
 					return
 				}
 				console.log(data)
+				let timeBefore = parseInt((new Date()).getTime())
 				let res = await this._court.orderCourt(data)
 				console.log(res)
 				// 1072 -- 已预定2小时
 				if(res && res.respCode == 1072){
 					console.log('已锁定或预定2小时')
 					this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
+					this.orderStart = false
 					return
 				}
 				let timeAfter = parseInt((new Date()).getTime())
 				let t = split - (timeAfter - timeBefore)
 				await this.timeoutPromise(t)
-				list.splice(index, 1)
+				if(this._dataType.isObject(res) && res.respCode != 1071){
+					list.splice(index, 1)
+				}
 				this.orderCourtIntervalAction(list)
 			},
+
+			orderCourtACH(list){
+				list = list || []
+				for(var i in list){
+					let data = list[i]
+					this._court.orderCourt(data)
+				}
+			},
+
 			createOrderList(){
 				let minTime = 19, maxTime = 20
 				let disabledCourtId = 38
@@ -310,7 +361,7 @@
 						rd.push({
 							addOrderType: 'wx',
 							userid: this.userid,
-							paywaycode: 0,
+							paywaycode: this.paywaycode,
 							cardnumber: '',
 							mobile: '',
 							ordercode: '',
@@ -338,7 +389,7 @@
 				let list = this.courtInfo || {}
 				list = list.venList || []
 				if(!list.length) return
-				let data = [], disabledVid = 11
+				let data = [], disabledVid = null
 				list = this.extendG.concat(list)
 				console.log(list)
 				for(var i in list){
@@ -355,16 +406,15 @@
 				minTime = minTime || this.minTime, maxTime = maxTime || this.maxTime
 				let orderNum = 2
 				if(maxTime == minTime) orderNum = 1
-				console.log(orderNum)
 				let disabledCourtId = 38
 				list = list || this.courtContent || []
 				let date = this.selectDateData
 				if(!list.length) return
 				let rd = []
 				let timeList = list[0].reserve
-				console.log(minTime, maxTime)
-				// for(var j = 0; j < timeList.length; j = j + orderNum){
+				let rd_as = []
 				for(var j = 0; j < timeList.length; j++){
+					let as_list = []
 					for(var i in list){
 						if(list[i].id == disabledCourtId) continue
 						let parkList = []
@@ -394,7 +444,17 @@
 						rd.push({
 							addOrderType: 'wx',
 							userid: this.userid,
-							paywaycode: 0,
+							paywaycode: this.paywaycode,
+							cardnumber: '',
+							parkList: JSON.stringify(parkList),
+							mobile: '',
+							ordercode: ''
+							// parkList: parkList
+						})
+						as_list.push({
+							addOrderType: 'wx',
+							userid: this.userid,
+							paywaycode: this.paywaycode,
 							cardnumber: '',
 							parkList: JSON.stringify(parkList),
 							mobile: '',
@@ -402,8 +462,21 @@
 							// parkList: parkList
 						})
 					}
+					if(as_list.length) rd_as.push(this._dataType.deepCopy(as_list))
 				}
-				return rd
+				let lastData = []
+				for(i in rd_as){
+					rd_as[i] = this.randomArray(rd_as[i])
+					lastData = lastData.concat(rd_as[i])
+				}
+				// return rd
+				return lastData
+			},
+			randomArray(arr){
+				arr.sort(() =>{
+	            	return Math.random() - 0.5
+         		})
+				return arr
 			},
 			courtAreaChange(){
 				this.courtListInit()
@@ -411,6 +484,9 @@
 			randomNum(minNum, maxNum) {
 				return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
 			},
+			orderStop(){
+				this.orderStart = false
+			}
         },
         created() {
 			// setInterval(() => {
@@ -453,17 +529,11 @@
 				return rd
 			},
 			orderParams(){
-				// addOrderType: "app"
-				// parklist: [{time: 14, parkname: "K3", date: "2021-04-22"}, {time: 15, parkname: "K3", date: "2021-04-22"}]
-				// [{"date":"2021-04-22","time":"13","parkid":"15","parkname":"D1"}]
-				// paywaycode: 0
-				// userid: 12765
-				// [{"date":"2021-04-22","time":"14","parkid":"7","parkname":"C1"}]
 				let data = {
 					addOrderType: 'wx',
 					userid: this.userid,
 					parkList: JSON.stringify(this.selectParams),
-					paywaycode: 0,
+					paywaycode: this.paywaycode,
 					cardnumber: '',
 					mobile: '',
 					ordercode: ''
@@ -665,8 +735,20 @@
 			}
 		}
 		.area-box{
+			padding-top: 0px;
 			.order-btn{
 				height: 20px;
+				margin-top: 10px;
+			}
+			.order-btn:first-child{
+				margin: 0px;
+			}
+			.order-spec{
+				position: fixed;
+				top: 30vh;
+				left: 0px;
+				z-index: 999;
+				width: 30vw;
 			}
 		}
 	}
