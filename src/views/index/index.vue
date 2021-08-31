@@ -6,6 +6,7 @@
 			<van-button class="order-btn" type="primary" @click="orderCourtInterval" block >定时预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderCourtImmdia" block >立即预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderStop" block >停止</van-button>
+			<van-button class="order-btn" type="primary" @click="checkCodeHand" block id="checkCodeBtn">验证码</van-button>
 		</div>
 		<div class="time-area"></div>
         <div class="date-box">
@@ -60,6 +61,7 @@
 				</ul>
 			</div>
 		</div>
+		<div class="code-box-as" id="codeBoxAs"></div>
     </div>
 </template>
 
@@ -67,6 +69,9 @@
 // JSESSIONID=536BABDC1F54316572934C0DA893483E
 // 	openid=oR_qexL17fcNPVkLyzOKOdpucCQc
 import {extendsGC, extendsGY, extendsK} from './staticCourt'
+import verify from '@/API/verify'
+import $ from 'jquery'
+
 
 
     export default {
@@ -570,9 +575,44 @@ import {extendsGC, extendsGY, extendsK} from './staticCourt'
 			},
 			orderStop(){
 				this.orderStart = false
-			}
+			},
+			async checkCodeHand(){
+				// let res = await this._court.getCheckCode(this.userid)
+				// console.log(res)
+
+				$('#codeBoxAs').slideVerify({
+					baseUrl: 'http://tennis.coopcloud.cn',  //服务器请求地址, 不填写就是localhost
+					mode: 'pop',     //展示模式
+					containerId: 'checkCodeBtn',//pop模式 必填 被点击之后出现行为验证码的元素id
+					imgSize: {       //图片的大小对象,有默认值{ width: '310px',height: '155px'},可省略
+						width: '80%',
+						height: '180px',
+					},
+					barSize: {          //下方滑块的大小对象,有默认值{ width: '310px',height: '50px'},可省略
+						width: '80%',
+						height: '30px',
+					},
+					beforeCheck: function () {  //检验参数合法性的函数  mode ="pop"有效
+						//实现: 参数合法性的判断逻辑, 返回一个boolean值
+						return true
+					},
+					ready: function () {
+					},  //加载完毕的回调
+					success: function (params) { //成功的回调
+						// params为返回的二次验证参数 需要在接下来的实现逻辑回传服务器
+						// setTimeout(function () {
+						// 	$("#captchaVerification").val(params.captchaVerification)
+						// 	checksuccess();
+						// }, 300);
+						console.log(params)
+					},
+					error: function () {
+					}        //失败的回调
+				});
+			},
         },
         created() {
+			console.log(verify)
 			this.extendsGC = extendsGC
 			this.extendsGY = extendsGY
 			this.extendsK = extendsK

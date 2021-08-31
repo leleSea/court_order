@@ -104,4 +104,28 @@ export default class court{
         }
         return res
     }
+
+    async getCheckCode(userid){
+        // http://tennis.coopcloud.cn/TennisCenterInterface/imgCaptcha/api/get.action
+        let url = '/TennisCenterInterface/imgCaptcha/api/get.action'
+        // {"captchaType":"blockPuzzle","clientUid":"slider-331a6d4b-b90c-4b47-824e-0c33042c8f2c","ts":1630114683003,"userid":12765}
+        // 1630116189322
+        let time = (new Date()).getTime()
+        let options = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                userid: userid
+            },
+            data: {
+                userid: userid,
+                captchaType: 'blockPuzzle',
+                clientUid: 'slider-331a6d4b-b90c-4b47-824e-0c33042c8f2c',
+                ts: time
+            }
+        }
+        let res = await this._http.request('court', options)
+        return res
+    }
 }
