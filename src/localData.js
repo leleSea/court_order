@@ -36,5 +36,15 @@ export default class localData{
     getTemItem(key){
         return sessionStorage.getItem(key)
     }
-
+    getItemParse(key){
+        let data = this.getItem(key)
+        let tem = data
+        if(!data) return data
+        try{
+            data = JSON.parse(data)
+        }catch(e){
+            data = tem
+        }
+        return data
+    }
 }
