@@ -370,15 +370,8 @@ export default class slide{
             // this.htmlDoms.tips.css({"display":"block",animation:"move 1.3s cubic-bezier(0, 0, 0.39, 1.01)"});
             this.htmlDoms.tips.animate({"bottom": "0px"});
             this.htmlDoms.tips.text(res.repMsg)
-            setTimeout(function () {
-                this.refresh();
-                this.htmlDoms.tips.animate({"bottom": "-35px"});
-            }, 1000);
-
-            // setTimeout(function () {
-            // 	// this.htmlDoms.tips.css({"display":"none",animation:"none"});
-            // },1300)
-            // this.options.error(this);
+            this.refresh();
+            this.htmlDoms.tips.animate({"bottom": "-35px"});
         }
     }
 
@@ -447,6 +440,7 @@ export default class slide{
 
     //刷新
     async refresh () {
+        await this.setPictrue()
         var _this = this;
         this.htmlDoms.refresh.show();
         this.$element.find('.verify-msg:eq(1)').text('');
@@ -472,7 +466,6 @@ export default class slide{
         var user = this._localData.getItemParse('user')
         user = user || {}
         let userid = user.id || -1
-        await this.setPictrue()
         // this.getPictrue(userid,{
         //     captchaType: "blockPuzzle",
         //     clientUid: localStorage.getItem('slider'),
@@ -508,6 +501,7 @@ export default class slide{
             ts: Date.now(),
             userid: userid
         })
+        if(!data) return
         this.$element.find(".backImg")[0].src = 'data:image/png;base64,' + data.originalImageBase64
         this.$element.find(".bock-backImg")[0].src = 'data:image/png;base64,' + data.jigsawImageBase64
         this.secretKey = data.secretKey

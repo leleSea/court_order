@@ -212,8 +212,8 @@ import slideClass from '@/API/slide'
 				let params = this.orderParams
 				params = await this.orderParamsPar(params)
 				if(!params) return
-				// let res = await this._court.orderCourt(params)
-				// console.log(res)
+				let res = await this._court.orderCourt(params)
+				console.log(res)
 			},
 			
 			// getOrderCourtParams(court, courtPar){
@@ -361,6 +361,7 @@ import slideClass from '@/API/slide'
 				let index = 0
 				let split = 1000
 				let data = list[index]
+				let timeBefore = parseInt((new Date()).getTime())
 				console.log(JSON.parse(JSON.stringify(list)))
 				if(!data || !list.length){
 					console.log('结束')
@@ -369,16 +370,31 @@ import slideClass from '@/API/slide'
 					return
 				}
 				console.log(data)
-				let timeBefore = parseInt((new Date()).getTime())
-				let res = await this._court.orderCourt(data)
-				console.log(res)
-				// 1072 -- 已预定2小时
-				if(res && res.respCode == 1072){
-					console.log('已锁定或预定2小时')
-					this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
-					this.orderStart = false
-					return
+
+				data = await this.orderParamsPar(data)
+				let res = null
+				if(data){
+					res = await this._court.orderCourt(data)
+					console.log(res)
+					// 1072 -- 已预定2小时
+					if(res && res.respCode == 1072){
+						console.log('已锁定或预定2小时')
+						this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
+						this.orderStart = false
+						return
+					}
 				}
+
+
+				// let res = await this._court.orderCourt(data)
+				// console.log(res)
+				// // 1072 -- 已预定2小时
+				// if(res && res.respCode == 1072){
+				// 	console.log('已锁定或预定2小时')
+				// 	this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
+				// 	this.orderStart = false
+				// 	return
+				// }
 				let timeAfter = parseInt((new Date()).getTime())
 				let t = split - (timeAfter - timeBefore)
 				await this.timeoutPromise(t)
@@ -620,9 +636,33 @@ import slideClass from '@/API/slide'
 				this.slide_.init()
 			},
 			async getPictrue(){
-				let res = await this._court.getCheckCode(this.userid)
+				// let res = await this._court.getCheckCode(this.userid)
+				// if(res && res.repCode == '0000'){
+				// 	return res.repData
+				// }
+				let res = await this.getPictrueAction()
 				if(res && res.repCode == '0000'){
 					return res.repData
+				}
+			},
+			async getPictrueAction(num){
+				console.log(num)
+				let timeBefore = parseInt((new Date()).getTime() / 1000)
+				let split = 1000
+				let max = 3
+				num = num || 1
+				if(num > max) return false
+				let res = await this._court.getCheckCode(this.userid)
+				let timeAfter = parseInt((new Date()).getTime() / 1000)
+				if(res && res.repCode == '0000'){
+					return res
+				}else{
+					let det = split - (timeAfter - timeBefore) 
+					console.log(det)
+					if(det < 0) det = 0
+					setTimeout(() => {
+						return this.getPictrueAction(++num)
+					}, det);
 				}
 			},
 			async checkPictrue(data, captchaVerification){

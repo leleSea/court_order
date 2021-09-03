@@ -106,10 +106,7 @@ export default class court{
     }
 
     async getCheckCode(userid){
-        // http://tennis.coopcloud.cn/TennisCenterInterface/imgCaptcha/api/get.action
         let url = '/TennisCenterInterface/imgCaptcha/api/get.action'
-        // {"captchaType":"blockPuzzle","clientUid":"slider-331a6d4b-b90c-4b47-824e-0c33042c8f2c","ts":1630114683003,"userid":12765}
-        // 1630116189322
         let time = (new Date()).getTime()
         let options = {
             url: url,
@@ -123,7 +120,8 @@ export default class court{
                 captchaType: 'blockPuzzle',
                 clientUid: 'slider-331a6d4b-b90c-4b47-824e-0c33042c8f2c',
                 ts: time
-            }
+            },
+            timeout: 3000
         }
         let res = await this._http.request('court', options)
         return res
