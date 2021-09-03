@@ -6,7 +6,6 @@
 			<van-button class="order-btn" type="primary" @click="orderCourtInterval" block >定时预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderCourtImmdia" block >立即预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderStop" block >停止</van-button>
-			<van-button class="order-btn" type="primary" @click="checkCodeHand" block id="checkCodeBtn">验证码</van-button>
 		</div>
 		<div class="time-area"></div>
         <div class="date-box">
@@ -69,7 +68,6 @@
 // JSESSIONID=536BABDC1F54316572934C0DA893483E
 // 	openid=oR_qexL17fcNPVkLyzOKOdpucCQc
 import {extendsGC, extendsGY, extendsK} from './staticCourt'
-import verify from '@/API/verify'
 import $ from 'jquery'
 import slideClass from '@/API/slide'
 
@@ -121,8 +119,8 @@ import slideClass from '@/API/slide'
 				extendsGY: extendsGY,
 				extendsK: extendsK,
 				orderStart: false,
-				minTime: 21,
-				maxTime: 22,
+				minTime: 20,
+				maxTime: 21,
 				timeNow: {
 					h: null,
 					m: null,
@@ -212,9 +210,10 @@ import slideClass from '@/API/slide'
 			async orderCourt(){
 				if(this.orderDisabled) return
 				let params = this.orderParams
-				console.log(params)
-				let res = await this._court.orderCourt(params)
-				console.log(res)
+				params = await this.orderParamsPar(params)
+				if(!params) return
+				// let res = await this._court.orderCourt(params)
+				// console.log(res)
 			},
 			
 			// getOrderCourtParams(court, courtPar){
@@ -335,14 +334,18 @@ import slideClass from '@/API/slide'
 					return
 				}
 				console.log(data)
-				let res = await this._court.orderCourt(data)
-				console.log(res)
-				// 1072 -- 已预定2小时
-				if(res && res.respCode == 1072){
-					console.log('已锁定或预定2小时')
-					this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
-					this.orderStart = false
-					return
+				data = await this.orderParamsPar(data)
+				let res = null
+				if(data){
+					res = await this._court.orderCourt(data)
+					console.log(res)
+					// 1072 -- 已预定2小时
+					if(res && res.respCode == 1072){
+						console.log('已锁定或预定2小时')
+						this._errorHandle.handleRes({respMsg: '已锁定或预定2小时'})
+						this.orderStart = false
+						return
+					}
 				}
 				let timeAfter = parseInt((new Date()).getTime())
 				let t = split - (timeAfter - timeBefore)
@@ -414,7 +417,6 @@ import slideClass from '@/API/slide'
 							cardnumber: '',
 							mobile: '',
 							ordercode: '',
-							captchaVerification:'I5cE4MqX3rN36OCFbzVIxA0AGmlV9KLTDarrGmE9D3vySPAQlXuHBpvvY4qKuTPqVYjbplVlJSyPnPhXKcKd3KJb2+6iAYZQ4tg1BqAPMc=',
 							parkList: JSON.stringify([
 								{
 									time: t1.time,
@@ -566,7 +568,6 @@ import slideClass from '@/API/slide'
 							addOrderType: 'wx',
 							userid: this.userid,
 							paywaycode: this.paywaycode,
-							captchaVerification:'I5cE4MqX3rN36OCFbzVIxA0AGmlV9KLTDarrGmE9D3vySPAQlXuHBpvvY4qKuTPqVYjbplVlJSyPnPhXKcKd3KJb2+6iAYZQ4tg1BqAPMc=',
 							cardnumber: '',
 							parkList: JSON.stringify(parkList),
 							mobile: '',
@@ -577,7 +578,6 @@ import slideClass from '@/API/slide'
 							addOrderType: 'wx',
 							userid: this.userid,
 							paywaycode: this.paywaycode,
-							captchaVerification:'I5cE4MqX3rN36OCFbzVIxA0AGmlV9KLTDarrGmE9D3vySPAQlXuHBpvvY4qKuTPqVYjbplVlJSyPnPhXKcKd3KJb2+6iAYZQ4tg1BqAPMc=',
 							cardnumber: '',
 							parkList: JSON.stringify(parkList),
 							mobile: '',
@@ -610,40 +610,6 @@ import slideClass from '@/API/slide'
 			orderStop(){
 				this.orderStart = false
 			},
-			async checkCodeHand(){
-				// let res = await this._court.getCheckCode(this.userid)
-				// console.log(res)
-
-				$('#codeBoxAs').slideVerify({
-					baseUrl: 'http://tennis.coopcloud.cn',  //服务器请求地址, 不填写就是localhost
-					mode: 'pop',     //展示模式
-					containerId: 'checkCodeBtn',//pop模式 必填 被点击之后出现行为验证码的元素id
-					imgSize: {       //图片的大小对象,有默认值{ width: '310px',height: '155px'},可省略
-						width: '80%',
-						height: '180px',
-					},
-					barSize: {          //下方滑块的大小对象,有默认值{ width: '310px',height: '50px'},可省略
-						width: '80%',
-						height: '30px',
-					},
-					beforeCheck: function () {  //检验参数合法性的函数  mode ="pop"有效
-						//实现: 参数合法性的判断逻辑, 返回一个boolean值
-						return true
-					},
-					ready: function () {
-					},  //加载完毕的回调
-					success: function (params) { //成功的回调
-						// params为返回的二次验证参数 需要在接下来的实现逻辑回传服务器
-						// setTimeout(function () {
-						// 	$("#captchaVerification").val(params.captchaVerification)
-						// 	checksuccess();
-						// }, 300);
-						console.log(params)
-					},
-					error: function () {
-					}        //失败的回调
-				});
-			},
 			slideInit(){
 				let ele = $('#codeBoxAs')
 				console.log(ele)
@@ -661,15 +627,35 @@ import slideClass from '@/API/slide'
 			},
 			async checkPictrue(data, captchaVerification){
 				console.log(data)
-				this.captchaVerification = captchaVerification
+				let res = await this._court.checkImgCode(data)
+				return res
+			},
+			async imgCodeOpen(){
+				await this.slide_.refresh()
+				this.slide_.$element.find(".mask").css("display", "block");
 			},
 			imgCodeClose(){
 				this.slide_.$element.find(".mask").css("display", "none");
-				this.slide_.refresh()
+				// this.slide_.refresh()
+			},
+			async imgcodeStart(){
+				let res = await this.slide_.imgCodeStart()
+				console.log(res)
+				res = res || {}
+				// this.imgCodeClose()
+				return res
+			},
+			async orderParamsPar(params){
+				let checkData = await this.imgcodeStart()
+				checkData = checkData || {}
+				if(checkData.captchaVerification) params.captchaVerification = checkData.captchaVerification
+				if(!params.captchaVerification) return null
+				// let res = await this._court.checkImgCode(checkData.data)
+				// if(!res || res.repCode != '0000') return null
+				return params
 			},
         },
         created() {
-			console.log(verify)
 			this.extendsGC = extendsGC
 			this.extendsGY = extendsGY
 			this.extendsK = extendsK
@@ -720,7 +706,6 @@ import slideClass from '@/API/slide'
 								addOrderType: 'wx',
 								userid: this.userid,
 								paywaycode: this.paywaycode,
-								captchaVerification:'I5cE4MqX3rN36OCFbzVIxA0AGmlV9KLTDarrGmE9D3vySPAQlXuHBpvvY4qKuTPqVYjbplVlJSyPnPhXKcKd3KJb2+6iAYZQ4tg1BqAPMc=',
 								cardnumber: '',
 								parkList: JSON.stringify(temList),
 								mobile: '',
@@ -765,7 +750,6 @@ import slideClass from '@/API/slide'
 					userid: this.userid,
 					parkList: JSON.stringify(this.selectParams),
 					paywaycode: this.paywaycode,
-					captchaVerification:'I5cE4MqX3rN36OCFbzVIxA0AGmlV9KLTDarrGmE9D3vySPAQlXuHBpvvY4qKuTPqVYjbplVlJSyPnPhXKcKd3KJb2+6iAYZQ4tg1BqAPMc=',
 					cardnumber: '',
 					mobile: '',
 					ordercode: ''

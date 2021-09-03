@@ -68,7 +68,7 @@ export default class slide{
 
             _this.$element.find('.verifybox-close').on('click', function () {
                 _this.$element.find(".mask").css("display", "none");
-                _this.refresh();
+                // _this.refresh();
             });
 
             var clickBtn = document.getElementById(this.options.containerId);
@@ -268,7 +268,7 @@ export default class slide{
             var user = this._localData.getItemParse('user')
             user = user || {}
             let userid = user.id || -1
-
+            console.log(userid)
             var data = {
                 captchaType: this.options.captchaType,
                 "pointJson": this.secretKey ? this.aesEncrypt(JSON.stringify({
@@ -284,7 +284,8 @@ export default class slide{
                 x: this.moveLeftDistance,
                 y: 5.0
             }), this.secretKey) : this.backToken + '---' + JSON.stringify({x: this.moveLeftDistance, y: 5.0})
-            this.checkPictrueAction(data)
+            console.log(captchaVerification)
+            this.checkPictrueAction(data, captchaVerification)
             // this.checkPictrue(userid,data, this.options.baseUrl, function (res) {
             //     // 请求反正成功的判断
             //     if (res.repCode == "0000") {
@@ -337,8 +338,48 @@ export default class slide{
             x: this.moveLeftDistance,
             y: 5.0
         }), this.secretKey) : this.backToken + '---' + JSON.stringify({x: this.moveLeftDistance, y: 5.0})
-        console.log(captchaVerification)
         let res = await this.checkPictrue(data, captchaVerification)
+        if (res.repCode == "0000") {
+            this.htmlDoms.move_block.css('background-color', '#5cb85c');
+            this.htmlDoms.left_bar.css({'border-color': '#5cb85c', 'background-color': '#fff'});
+            this.htmlDoms.icon.css('color', '#fff');
+            this.htmlDoms.icon.removeClass('icon-right');
+            this.htmlDoms.icon.addClass('icon-check');
+            //提示框
+            this.htmlDoms.tips.addClass('suc-bg').removeClass('err-bg')
+            // this.htmlDoms.tips.css({"display":"block",animation:"move 1s cubic-bezier(0, 0, 0.39, 1.01)"});
+            this.htmlDoms.tips.animate({"bottom": "0px"});
+            this.htmlDoms.tips.text(((this.endMovetime - this.startMoveTime) / 1000).toFixed(2) + 's验证成功');
+            this.isEnd = true;
+            // setTimeout(function () {
+                this.$element.find(".mask").css("display", "none");
+                // this.htmlDoms.tips.css({"display":"none",animation:"none"});
+                this.htmlDoms.tips.animate({"bottom": "-35px"});
+                // this.refresh();
+            // }, 1000)
+            // this.options.success({'captchaVerification': captchaVerification});
+            if(this.response) this.response({data, captchaVerification})
+        } else {
+            this.htmlDoms.move_block.css('background-color', '#d9534f');
+            this.htmlDoms.left_bar.css('border-color', '#d9534f');
+            this.htmlDoms.icon.css('color', '#fff');
+            this.htmlDoms.icon.removeClass('icon-right');
+            this.htmlDoms.icon.addClass('icon-close');
+
+            this.htmlDoms.tips.addClass('err-bg').removeClass('suc-bg')
+            // this.htmlDoms.tips.css({"display":"block",animation:"move 1.3s cubic-bezier(0, 0, 0.39, 1.01)"});
+            this.htmlDoms.tips.animate({"bottom": "0px"});
+            this.htmlDoms.tips.text(res.repMsg)
+            setTimeout(function () {
+                this.refresh();
+                this.htmlDoms.tips.animate({"bottom": "-35px"});
+            }, 1000);
+
+            // setTimeout(function () {
+            // 	// this.htmlDoms.tips.css({"display":"none",animation:"none"});
+            // },1300)
+            // this.options.error(this);
+        }
     }
 
     resetSize (obj) {
@@ -486,7 +527,7 @@ export default class slide{
         return encrypted.toString();
     }
 
-    checkPictrue(data) {
+    async checkPictrue(data, captchaVerification) {
         // $.ajax({
         //     type: "post",
         //     contentType: "application/json;charset=UTF-8",
@@ -504,7 +545,10 @@ export default class slide{
         //         reject(err)
         //     }
         // })
-        return this.checkPictrueCallback(data)
+        let opt = {data, captchaVerification}
+        console.log(opt)
+        // if(this.response) this.response(opt)
+        return this.checkPictrueCallback(data, captchaVerification)
     }
 
     async getPictrue(userid, data, baseUrl, resolve, reject) {
@@ -527,5 +571,20 @@ export default class slide{
         // })
 
         return this.getPictrueCallback(userid, data)
+    }
+    imgCodeStart(){
+        return new Promise(res => {
+            this.refresh().then(() => {
+                this.response = res
+                this.imgCodeOpen()
+            })
+        })
+    }
+    imgCodeOpen(){
+        this.$element.find(".mask").css("display", "block");
+    }
+    imgCodeClose(){
+        this.$element.find(".mask").css("display", "none");
+        // this.refresh()
     }
 }

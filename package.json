@@ -12,6 +12,7 @@
     "axios": "^0.21.1",
     "babel-plugin-import": "^1.13.3",
     "core-js": "^3.6.5",
+    "crypto-js": "^4.1.1",
     "jquery": "^3.6.0",
     "js-md5": "^0.7.3",
     "vant": "^2.8.5",

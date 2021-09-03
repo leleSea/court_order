@@ -128,4 +128,19 @@ export default class court{
         let res = await this._http.request('court', options)
         return res
     }
+
+    async checkImgCode(data){
+        let url = '/TennisCenterInterface/imgCaptcha/api/check.action'
+        let time = (new Date()).getTime()
+        let options = {
+            url: url,
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            data: data
+        }
+        let res = await this._http.request('court', options)
+        return res
+    }
 }
