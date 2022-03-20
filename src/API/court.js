@@ -121,7 +121,7 @@ export default class court{
                 clientUid: 'slider-331a6d4b-b90c-4b47-824e-0c33042c8f2c',
                 ts: time
             },
-            timeout: 3000
+            timeout: 10000
         }
         let res = await this._http.request('court', options)
         return res

@@ -119,7 +119,7 @@ import slideClass from '@/API/slide'
 				extendsGY: extendsGY,
 				extendsK: extendsK,
 				orderStart: false,
-				minTime: 20,
+				minTime: 12,
 				maxTime: 21,
 				timeNow: {
 					h: null,
@@ -290,7 +290,7 @@ import slideClass from '@/API/slide'
 			},
 			async tryQueryCort(num){
 				num = num || 1
-				if(num >= 4) return false
+				if(num >= 8) return false
 				await this.courtListInit()
 				let list = this.courtContent || []
 				let data = list[0]
@@ -300,12 +300,13 @@ import slideClass from '@/API/slide'
 				}
 				num++
 				console.log('wait ing ing')
-				await this.timeoutPromise(200)
+				await this.timeoutPromise(300)
 				return this.tryQueryCort(num)
 			},
 			async orderCourtInterval(){
 				await this.setTimeToOrder(0, 0, 0)
 				console.log('start order')
+				await this.timeoutPromise(500)
 				await this.tryQueryCort()
 				let requestList = this.availableCourt || []
 				if(!requestList.length){
