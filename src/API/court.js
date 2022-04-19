@@ -141,4 +141,18 @@ export default class court{
         let res = await this._http.request('court', options)
         return res
     }
+
+    async queryIsCodeTime(userid){
+        let url = '/TennisCenterInterface/umUser/queryIsCodeTime.action'
+        let options = {
+            url: url,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            data: {userid}
+        }
+        let res = await this._http.request('court', options)
+        return res
+    }
 }

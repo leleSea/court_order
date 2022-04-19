@@ -695,8 +695,14 @@ import slideClass from '@/API/slide'
 				// if(!res || res.repCode != '0000') return null
 				return params
 			},
+			//获取是否需要验证码
+			async queryIsCodeTime() {
+				let res = await this._court.queryIsCodeTime(this.userid)
+				console.log(res)
+			}
         },
         created() {
+			this.queryIsCodeTime()
 			this.extendsGC = extendsGC
 			this.extendsGY = extendsGY
 			this.extendsK = extendsK
