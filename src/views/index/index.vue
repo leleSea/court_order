@@ -61,6 +61,7 @@
 			</div>
 		</div>
 		<div class="code-box-as" id="codeBoxAs" ref="codeBoxAs"></div>
+		<mobileCode ref="mobileCode" :userid.sync="userid"></mobileCode>
     </div>
 </template>
 
@@ -70,6 +71,7 @@
 import {extendsGC, extendsGY, extendsK} from './staticCourt'
 import $ from 'jquery'
 import slideClass from '@/API/slide'
+import mobileCode from './mobileCode.vue'
 
 
 
@@ -145,6 +147,7 @@ import slideClass from '@/API/slide'
 				selectCourtData: [],
 				maxOrderNum: 2,
 				paywaycode: 0,
+				smsCode: false
             };
         },						
         methods: {
@@ -155,6 +158,7 @@ import slideClass from '@/API/slide'
 				await this.userInit()
 				await this.courtListInit()
 				this.slideInit()
+				// this.queryIsCodeTime()
 			},
 			changeSelect(val){
 				this.selectDateVal = val
@@ -687,22 +691,30 @@ import slideClass from '@/API/slide'
 				return res
 			},
 			async orderParamsPar(params){
+				if(this.smsCode) return this.orderByMobile(params)
 				let checkData = await this.imgcodeStart()
 				checkData = checkData || {}
 				if(checkData.captchaVerification) params.captchaVerification = checkData.captchaVerification
 				if(!params.captchaVerification) return null
-				// let res = await this._court.checkImgCode(checkData.data)
-				// if(!res || res.repCode != '0000') return null
 				return params
+			},
+			async orderByMobile(params){
+				let code = await this.$refs['mobileCode'].open()
+				console.log(code)
 			},
 			//获取是否需要验证码
 			async queryIsCodeTime() {
 				let res = await this._court.queryIsCodeTime(this.userid)
 				console.log(res)
-			}
+				res = res || {}
+				if(res.respCode == '1001'){
+					this.smsCode = res.datas == 1 ? true : false
+				}
+			},
+			confirmOrderByCode(){}
         },
         created() {
-			this.queryIsCodeTime()
+			
 			this.extendsGC = extendsGC
 			this.extendsGY = extendsGY
 			this.extendsK = extendsK
@@ -717,6 +729,7 @@ import slideClass from '@/API/slide'
 			// }, 500);
         },
         components: {
+			mobileCode
         },
         computed: {
 			availableCourt(){

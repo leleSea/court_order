@@ -155,4 +155,23 @@ export default class court{
         let res = await this._http.request('court', options)
         return res
     }
+
+    async getCode(mobile, userid){
+        // mobile:mobile,
+		// 		userId:userid
+        let url = '/TennisCenterInterface/umUser/getOrderCode.action'
+        let options = {
+            url: url,
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+            },
+            data: {userid, mobile}
+        }
+        let res = await this._http.request('court', options)
+        if(res && res.respCode == '1001'){
+            this._errorHandle.notifySuccess({respMsg: '已发送'})
+        }
+        return res
+    }
 }

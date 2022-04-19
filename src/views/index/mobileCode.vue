@@ -1,0 +1,74 @@
+<!--  -->
+<template>
+    <div class="approveMask" v-if="active" @click.self="close">
+        <div class="approvebg">
+            <div class="titletext">验证码</div>
+            <div class="approveDataBg">
+                <div class="approveDataTitle">手机号：</div>
+                <input class="approveDataInput" type="text" v-model="mobile" disabled="disabled">
+            </div>
+            <div class="approveDataBg">
+                <input class="approveDataInput" type="text" id="ordercode" placeholder="请输入短信验证码" v-model="code">
+                <a class="maskgetCodeBtn" ><span id="time" @click="getCode">获取验证码</span></a>
+            </div>
+            <div class="suer_btn" @click="confirm">确定</div>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: '',
+        props: {
+            userid: [String, Number]
+        },
+        data() {
+            return {
+                active: false,
+                code: null,
+                mobile: '15010193341',
+                response: null
+            };
+        },
+        methods: {
+            open(){
+                return new Promise(success => {
+                    this.response = success
+                    this.active = true
+                    this.getCode()
+                })
+            },
+            confirm(){
+                if(this.response) this.response(this.code)
+                this.close()
+            },
+            close(){
+                this.active = false
+            },
+            async getCode(){
+                console.log('getCode')
+                let res = await this._court.getCode(this.mobile, this.userid)
+                res = res || {}
+            }
+        },
+        created() {
+
+        },
+        components: {
+        },
+        computed: {},
+        watch: {},
+        mounted() {},
+        beforeCreate() {}, //生命周期 - 创建之前
+        beforeMount() {}, //生命周期 - 挂载之前
+        beforeUpdate() {}, //生命周期 - 更新之前
+        updated() {}, //生命周期 - 更新之后
+        beforeDestroy() {}, //生命周期 - 销毁之前
+        destroyed() {}, //生命周期 - 销毁完成
+        activated() {}, //如果页面有keep-alive缓存功能，这个函数会触发
+    }
+</script>
+<style src="./register.css"></style>
+<style lang='less' >
+
+</style>

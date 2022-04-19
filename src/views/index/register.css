@@ -1,0 +1,97 @@
+/*鐜板湪鍔熻兘 css*/
+.reminder {
+    margin: 0.7rem 1rem;
+    color: #F56144;
+    font-size: 0.8rem;
+}
+.approveMask {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5) !important;/* 鍏煎ie鍑犱笉鐭ラ亾锛屽ソ鍍廼e5 */;
+    z-index: 9999;
+    position: fixed;
+    display: flex;
+    justify-items: center;
+}
+.approvebg {
+    margin: auto;
+    width: 80%;
+    height: auto;
+    background-color: #FFFFFF;
+    border-radius: .2rem;
+}
+.titletext {
+    width: 100%;
+    color: #333333;
+    font-size: 1.2rem;
+    text-align: center;
+    line-height: 2.8rem;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #E9E9E9;
+}
+.titleHint {
+    margin-top: .2rem;
+    margin-left: 5%;
+    width: 90%;
+    color: #F56144;
+    font-size: .8rem;
+    display: flex;
+}
+.approveDataBg {
+    margin-left: 5%;
+    width: 90%;
+    height: 3rem;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: #E9E9E9;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+}
+.approveDataTitle {
+    width: 40%;
+    height: auto;
+    color: #333333;
+    font-size: 1rem;
+}
+.approveDataInput {
+    width: 60% !important;
+    height: auto !important;
+    color: #333333;
+    font-size: 1rem;
+    line-height: normal !important;
+    margin-bottom: 0 !important;
+    padding: 0 !important;
+    -webkit-user-select: text !important;
+    border: none !important;
+    border-radius: 0 !important;
+    outline: 0 !important;
+    background-color: #fff !important;
+    -webkit-appearance: none !important;
+}
+.suer_btn {
+    margin: 2rem 0.875rem 1.5rem 0.875rem;
+    line-height: 2.5rem;
+    background: #2BB061;
+    text-align: center;
+    color: #fff;
+    font-size: 1.2rem;
+    border-radius: .2rem;
+}
+.maskgetCodeBtn {
+    font-size: 0.875rem;
+    line-height: 1.8rem;
+    color: #71c794;
+    padding: 0 0.5rem;
+    border: 1px solid #71c794;
+    border-radius: 1rem;
+    /*position: absolute;*/
+    /*top: 0.7rem;*/
+    /*right: 0.875rem;*/
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
