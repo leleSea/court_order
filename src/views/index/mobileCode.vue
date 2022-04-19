@@ -26,7 +26,7 @@
             return {
                 active: false,
                 code: null,
-                mobile: '15010193341',
+                mobile: '18600500769',
                 response: null
             };
         },
@@ -39,7 +39,8 @@
                 })
             },
             confirm(){
-                if(this.response) this.response(this.code)
+                let data = {code: this.code, mobile: this.mobile}
+                if(this.response) this.response(data)
                 this.close()
             },
             close(){

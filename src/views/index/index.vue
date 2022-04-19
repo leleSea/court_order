@@ -2,10 +2,10 @@
 <template>
     <div class='page-index'>
 		<div class="area-box">
-			<van-button class="order-btn order-spec" type="primary" @click="orderCourt" block :disabled="orderDisabled">预定</van-button>
-			<van-button class="order-btn" type="primary" @click="orderCourtInterval" block >定时预定</van-button>
-			<van-button class="order-btn" type="primary" @click="orderCourtImmdia" block >立即预定</van-button>
-			<van-button class="order-btn" type="primary" @click="orderStop" block >停止</van-button>
+			<van-button class="order-btn order-spec" type="primary" @click="orderCourt" :disabled="orderDisabled">预定</van-button>
+			<van-button class="order-btn" type="primary" @click="orderCourtInterval" >定时预定</van-button>
+			<van-button class="order-btn" type="primary" @click="orderCourtImmdia" >立即预定</van-button>
+			<van-button class="order-btn" type="primary" @click="orderStop" >停止</van-button>
 		</div>
 		<div class="time-area"></div>
         <div class="date-box">
@@ -121,8 +121,8 @@ import mobileCode from './mobileCode.vue'
 				extendsGY: extendsGY,
 				extendsK: extendsK,
 				orderStart: false,
-				minTime: 12,
-				maxTime: 21,
+				minTime: 11,
+				maxTime: 22,
 				timeNow: {
 					h: null,
 					m: null,
@@ -147,7 +147,7 @@ import mobileCode from './mobileCode.vue'
 				selectCourtData: [],
 				maxOrderNum: 2,
 				paywaycode: 0,
-				smsCode: false
+				smsCode: true
             };
         },						
         methods: {
@@ -158,7 +158,7 @@ import mobileCode from './mobileCode.vue'
 				await this.userInit()
 				await this.courtListInit()
 				this.slideInit()
-				// this.queryIsCodeTime()
+				this.queryIsCodeTime()
 			},
 			changeSelect(val){
 				this.selectDateVal = val
@@ -699,8 +699,14 @@ import mobileCode from './mobileCode.vue'
 				return params
 			},
 			async orderByMobile(params){
-				let code = await this.$refs['mobileCode'].open()
-				console.log(code)
+				let data = await this.$refs['mobileCode'].open()
+				// mobile:mobile,
+				// 	ordercode:ordercode,
+				// 	captchaVerification:captchaVerification
+				params.mobile = data.mobile
+				params.ordercode = data.code
+				params.captchaVerification = ''
+				return params
 			},
 			//获取是否需要验证码
 			async queryIsCodeTime() {
@@ -1012,13 +1018,12 @@ import mobileCode from './mobileCode.vue'
 			}
 		}
 		.area-box{
-			padding-top: 0px;
+			padding: 10px 0px;
 			.order-btn{
 				height: 20px;
-				margin-top: 10px;
 			}
-			.order-btn:first-child{
-				margin: 0px;
+			.order-btn+ .order-btn{
+				margin-left: 10px;
 			}
 			.order-spec{
 				position: fixed;

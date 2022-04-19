@@ -156,17 +156,19 @@ export default class court{
         return res
     }
 
-    async getCode(mobile, userid){
+    async getCode(mobile, userId){
+        // mobile:mobile,
+		// 		userId:userid
         // mobile:mobile,
 		// 		userId:userid
         let url = '/TennisCenterInterface/umUser/getOrderCode.action'
         let options = {
             url: url,
             method: 'GET',
-            headers: {
-                'Content-Type': 'application/json;charset=UTF-8',
-            },
-            data: {userid, mobile}
+            // headers: {
+            //     'Content-Type': 'application/json;charset=UTF-8',
+            // },
+            data: {userId, mobile}
         }
         let res = await this._http.request('court', options)
         if(res && res.respCode == '1001'){
