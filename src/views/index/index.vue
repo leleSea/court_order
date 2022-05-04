@@ -6,6 +6,7 @@
 			<van-button class="order-btn" type="primary" @click="orderCourtInterval" >定时预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderCourtImmdia" >立即预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderStop" >停止</van-button>
+			<van-button class="order-btn" type="primary" @click="test" >测试</van-button>
 		</div>
 		<div class="time-area"></div>
         <div class="date-box">
@@ -121,7 +122,7 @@ import mobileCode from './mobileCode.vue'
 				extendsGY: extendsGY,
 				extendsK: extendsK,
 				orderStart: false,
-				minTime: 11,
+				minTime: 10,
 				maxTime: 22,
 				timeNow: {
 					h: null,
@@ -158,7 +159,7 @@ import mobileCode from './mobileCode.vue'
 				await this.userInit()
 				await this.courtListInit()
 				this.slideInit()
-				this.queryIsCodeTime()
+				// this.queryIsCodeTime()
 			},
 			changeSelect(val){
 				this.selectDateVal = val
@@ -295,13 +296,15 @@ import mobileCode from './mobileCode.vue'
 			async tryQueryCort(num){
 				num = num || 1
 				if(num >= 8) return false
-				await this.courtListInit()
-				let list = this.courtContent || []
-				let data = list[0]
-				if(data){
-					let tem = data.reserve || []
-					if(tem[0] && tem[0].bookstatus != 3) return true
-				}
+				// await this.courtListInit()
+				// let list = this.courtContent || []
+				// let data = list[0]
+				// if(data){
+				// 	let tem = data.reserve || []
+				// 	if(tem[0] && tem[0].bookstatus != 3) return true
+				// }
+				let list = await this.getorderCourtList()
+				if(list) return list
 				num++
 				console.log('wait ing ing')
 				await this.timeoutPromise(300)
@@ -311,12 +314,13 @@ import mobileCode from './mobileCode.vue'
 				await this.setTimeToOrder(0, 0, 0)
 				console.log('start order')
 				await this.timeoutPromise(500)
-				await this.tryQueryCort()
-				let requestList = this.availableCourt || []
+				let requestList = await this.tryQueryCort()
+				// let requestList = this.availableCourt || []
 				if(!requestList.length){
-					console.log('没有可用的场地，执行默认规则')
-					this._errorHandle.handleRes({respMsg: '没有可用的场地，执行默认规则'})
-					return this.orderCourtImmdia()
+					console.log('没有可用的场地')
+					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
+					// return this.orderCourtImmdia()
+					return
 				}
 				this.orderStart = true
 				console.log(this._dataType.deepCopy(requestList))
@@ -717,7 +721,112 @@ import mobileCode from './mobileCode.vue'
 					this.smsCode = res.datas == 1 ? true : false
 				}
 			},
-			confirmOrderByCode(){}
+			confirmOrderByCode(){},
+			async getorderCourtList(){
+				let disabledId = {
+					'38': true,
+					'101': true,
+					'102': true,
+					'103': true
+				}
+				let params_GK = this._dataType.deepCopy(this.courtListParams)
+				let params_G = this._dataType.deepCopy(this.courtListParams)
+				params_GK.parktypeinfo = 3
+				params_G.parktypeinfo = 4
+				let resGK = await this._court.getCourtList(params_GK)
+				let resG = await this._court.getCourtList(params_G)
+				let parks = this.getPark(resGK)
+				parks = parks.concat(this.getPark(resG))
+				// let parks = this.getPark(resGK).concat(this.getPark(resG))
+				console.log(parks)
+				if(!this.courtStateCheck(parks)) return false
+				let rd = []
+				for(let i in parks){
+					let {id} = parks[i]
+					if(disabledId[id]) continue
+					rd.push(parks[i])
+				}
+				rd = this.availableCourtMethod(rd)
+				console.log(rd)
+				return rd
+			},
+			getPark(info){
+				let {venList = []} = info || {}
+				let parks = []
+				for(let i in venList){
+					let {park} = venList[i]
+					parks = parks.concat(park)
+				}
+				return parks
+			},
+			async test(){
+				// await this.courtListInit()
+				// let list = this.courtContent || []
+				// console.log(this._dataType.deepCopy(list))
+				// let state = this.courtStateCheck(list)
+				// console.log(state)
+				this.getorderCourtList()
+			},
+			courtStateCheck(list){
+				list = list || []
+				let f = false
+				for(let i in list){
+					let {reserve = []} = list[i]
+					for(let j in reserve){
+						let {bookstatus} = reserve[j]
+						if(bookstatus != 3){
+							f = true
+							break
+						}
+					}
+					if(f) break
+				}
+				return f
+			},
+			availableCourtMethod(list){
+				let {minTime, maxTime} = this
+				let date = this.selectDateData
+				let orderList = []
+				for(var i in list){
+					let reserve = list[i].reserve
+					let j = 0
+					while(reserve[j]){
+						let d1 = reserve[j], d2 = reserve[Number(j) + 1]
+						j++
+						if(!d2)continue
+						let t1 = d1.time
+						let t2 = d2.time
+						if(t1 >= minTime && t1 <= maxTime && 
+						t2 >= minTime && t2 <= maxTime &&
+						d1.bookstatus == 0 && d2.bookstatus == 0){
+							let temList = []
+							temList.push({
+								time: d1.time,
+								parkname: list[i].parkname,
+								date: `${date.year}-${date.month}-${date.day}`,
+								parkid: list[i].id
+							})
+							temList.push({
+								time: d2.time,
+								parkname: list[i].parkname,
+								date: `${date.year}-${date.month}-${date.day}`,
+								parkid: list[i].id
+							})
+							orderList.push({
+								addOrderType: 'wx',
+								userid: this.userid,
+								paywaycode: this.paywaycode,
+								cardnumber: '',
+								parkList: JSON.stringify(temList),
+								mobile: '',
+								ordercode: ''
+							})
+							
+						}
+					}
+				}
+				return orderList
+			}
         },
         created() {
 			
