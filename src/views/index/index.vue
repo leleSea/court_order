@@ -122,7 +122,7 @@ import mobileCode from './mobileCode.vue'
 				extendsGY: extendsGY,
 				extendsK: extendsK,
 				orderStart: false,
-				minTime: 10,
+				minTime: 20,
 				maxTime: 22,
 				timeNow: {
 					h: null,
@@ -307,11 +307,11 @@ import mobileCode from './mobileCode.vue'
 				if(list) return list
 				num++
 				console.log('wait ing ing')
-				await this.timeoutPromise(300)
+				await this.timeoutPromise(500)
 				return this.tryQueryCort(num)
 			},
 			async orderCourtInterval(){
-				await this.setTimeToOrder(0, 0, 0)
+				await this.setTimeToOrder(0, 0, 1)
 				console.log('start order')
 				await this.timeoutPromise(500)
 				let requestList = await this.tryQueryCort()
@@ -331,7 +331,8 @@ import mobileCode from './mobileCode.vue'
 			async orderCourtIntervalAction_random(list){
 				if(!this.orderStart) return
 				list = list || []
-				let index = this.randomNum(0, list.length - 1)
+				// let index = this.randomNum(0, list.length - 1)
+				let index = 0
 				let timeBefore = parseInt((new Date()).getTime())
 				let split = 1000
 				let data = list[index]
@@ -734,12 +735,11 @@ import mobileCode from './mobileCode.vue'
 				params_GK.parktypeinfo = 3
 				params_G.parktypeinfo = 4
 				let resGK = await this._court.getCourtList(params_GK)
-				let resG = await this._court.getCourtList(params_G)
 				let parks = this.getPark(resGK)
+				if(!this.courtStateCheck(parks)) return false
+				let resG = await this._court.getCourtList(params_G)
 				parks = parks.concat(this.getPark(resG))
 				// let parks = this.getPark(resGK).concat(this.getPark(resG))
-				console.log(parks)
-				if(!this.courtStateCheck(parks)) return false
 				let rd = []
 				for(let i in parks){
 					let {id} = parks[i]
@@ -747,17 +747,28 @@ import mobileCode from './mobileCode.vue'
 					rd.push(parks[i])
 				}
 				rd = this.availableCourtMethod(rd)
-				console.log(rd)
+				// rd = this.availableCourtMethodNew(rd)
+				console.log(this._dataType.deepCopy(rd))
 				return rd
 			},
 			getPark(info){
 				let {venList = []} = info || {}
-				let parks = []
+				let parks = [], sortIndex = 13, f = false
 				for(let i in venList){
-					let {park} = venList[i]
-					parks = parks.concat(park)
+					let {park, vid} = venList[i]
+					// park = this.randomList(park)
+					if(vid == sortIndex) parks = park.concat(parks)
+					else parks = parks.concat(park)
 				}
 				return parks
+			},
+			randomList(list, data){
+				data = data || []
+				if(!list || !list.length) return data
+				let index = this.randomNum(0, list.length - 1)
+				data.push(this._dataType.deepCopy(list[index]))
+				list.splice(index, 1)
+				return this.randomList(list, data)
 			},
 			async test(){
 				// await this.courtListInit()
@@ -826,7 +837,50 @@ import mobileCode from './mobileCode.vue'
 					}
 				}
 				return orderList
-			}
+			},
+			availableCourtMethodNew(list){
+				let {minTime, maxTime} = this
+				let timeNum = 16
+				let date = this.selectDateData
+				let orderList = []
+				for(let i = 0; i < timeNum; i++){
+					for(let j in list){
+						let {reserve} = list[j]
+						let d1 = reserve[i], d2 = reserve[Number(i) + 1]
+						if(!d2)continue
+						let t1 = d1.time
+						let t2 = d2.time
+						if(t1 >= minTime && t1 <= maxTime && 
+						t2 >= minTime && t2 <= maxTime &&
+						d1.bookstatus == 0 && d2.bookstatus == 0){
+							let temList = []
+							temList.push({
+								time: d1.time,
+								parkname: list[j].parkname,
+								date: `${date.year}-${date.month}-${date.day}`,
+								parkid: list[j].id
+							})
+							temList.push({
+								time: d2.time,
+								parkname: list[j].parkname,
+								date: `${date.year}-${date.month}-${date.day}`,
+								parkid: list[j].id
+							})
+							orderList.push({
+								addOrderType: 'wx',
+								userid: this.userid,
+								paywaycode: this.paywaycode,
+								cardnumber: '',
+								parkList: JSON.stringify(temList),
+								mobile: '',
+								ordercode: ''
+							})
+						}
+						
+					}
+				}
+				return orderList
+			},
         },
         created() {
 			
