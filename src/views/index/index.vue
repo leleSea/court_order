@@ -123,8 +123,8 @@ import mobileCode from './mobileCode.vue'
 				extendsGY: extendsGY,
 				extendsK: extendsK,
 				orderStart: false,
-				minTime: 15,
-				maxTime: 21,
+				minTime: 12,
+				maxTime: 15,
 				timeNow: {
 					h: null,
 					m: null,
@@ -148,8 +148,8 @@ import mobileCode from './mobileCode.vue'
 				courtInfo: {},
 				selectCourtData: [],
 				maxOrderNum: 2,
-				paywaycode: 0,
-				smsCode: true
+				paywaycode: 2,
+				smsCode: false
             };
         },						
         methods: {
@@ -315,8 +315,8 @@ import mobileCode from './mobileCode.vue'
 				await this.setTimeToOrder(0, 0, 1)
 				console.log('start order')
 				await this.timeoutPromise(100)
-				// await this.preOrder()
-				this.$refs['mobileCode'].getCode()
+				this.orderCourtAction()
+				// this.$refs['mobileCode'].getCode()
 
 
 				// let requestList = await this.tryQueryCort()
@@ -748,14 +748,14 @@ import mobileCode from './mobileCode.vue'
 					'102': true,
 					'103': true
 				}
-				let params_GK = this._dataType.deepCopy(this.courtListParams)
-				let params_G = this._dataType.deepCopy(this.courtListParams)
-				params_GK.parktypeinfo = 3
-				params_G.parktypeinfo = 4
-				let resGK = await this._court.getCourtList(params_GK)
+				let params_C = this._dataType.deepCopy(this.courtListParams)
+				let params_P = this._dataType.deepCopy(this.courtListParams)
+				params_C.parktypeinfo = 2
+				params_P.parktypeinfo = 5
+				let resGK = await this._court.getCourtList(params_C)
 				let parks = this.getPark(resGK)
 				if(!this.courtStateCheck(parks)) return false
-				// let resG = await this._court.getCourtList(params_G)
+				// let resG = await this._court.getCourtList(params_p)
 				// parks = parks.concat(this.getPark(resG))
 				let rd = []
 				for(let i in parks){
@@ -1118,7 +1118,7 @@ import mobileCode from './mobileCode.vue'
 			dateNav(){
 				let date = new Date()
 				let list = [], weekData = this.weekData
-				let i = date.getDay()
+				let i = (date.getDay() + 1) % weekData.length
 				let dayTime = 24 * 60 * 60 * 1000
 				while(list.length <= weekData.length){
 					if(!weekData[i]){
