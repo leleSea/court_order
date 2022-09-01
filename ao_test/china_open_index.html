@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+    <link href="/TennisCenterInterface/css/style.css" rel="stylesheet" type="text/css">
+    <script src="/TennisCenterInterface/js/jquery-1.12.3.min.js"></script>
+    <script src="/TennisCenterInterface/js/angular.min.js"></script>
+    <script src="/TennisCenterInterface/js/WxUtil.js"></script>
+    <script src="/TennisCenterInterface/js/util.js"></script>
+    <script src="/TennisCenterInterface/layer/layer.js"></script>
+    <script src="/TennisCenterInterface/js/home/book_venue.js?v=20210918"></script>
+    <script src="/TennisCenterInterface/js/courtbook.js?v=20210917" charset="utf-8"></script>
+    <title>选择场次</title>
+</head>
+<script>
+    var minHour = 1;//最小起订时间
+	var timeSurplus = 0;
+	var selectIdArr = [];//不可选id，数组
+</script>
+<style>
+    html,
+    body {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .book_time {
+        margin-top: 4.0rem !important;
+    }
+
+    .book_explain {
+        background-color: #f8f8f8;
+    }
+
+    .index_reserve {
+        min-height: 0 !important;
+    }
+</style>
+
+<body ng-controller="myCtrl">
+    <div class="header">
+        <a class="header_back" onclick="javascript:history.go(-1)"></a>
+        <h3>选择场次</h3>
+        <!--<a class="header_right" href="order_all.html">订单</a>-->
+    </div>
+    <ul class="index_reserve" style="width: 414px;">
+        <li id="place_1" class="place_check">
+            <div class="place_cut" id="parktype_1">
+                <!--            <a class="index_place_check" parkcode="1">气膜室内场</a>-->
+                <!--            <a parkcode="2" class="">竞赛室外场</a>-->
+                <!--            <a parkcode="3" class="">普通室外场</a>-->
+            </div>
+        </li>
+    </ul>
+    <div class="book-date">
+        <div class="date-wrap">
+            <ul class="date-ul">
+                <li data-t="{{day | date:'yyyy-MM-dd'}}"
+                    ng-class="{{day | date:'yyyy-MM-dd'}}=={{date}} ? 'active' :'' ">
+                    <p>今天</p>
+                    <p>{{day | date:'MM'}}月{{day | date:'dd'}}日</p>
+                </li>
+                <li data-t="{{day2 | date:'yyyy-MM-dd'}}"
+                    ng-class="{{day2 | date:'yyyy-MM-dd'}}=={{date}} ? 'active' :'' ">
+                    <p>{{day2week}}</p>
+                    <p>{{day2 | date:'MM'}}月{{day2 | date:'dd'}}日</p>
+                </li>
+                <li data-t="{{day3 | date:'yyyy-MM-dd'}}"
+                    ng-class="{{day3 | date:'yyyy-MM-dd'}}=={{date}} ? 'active' :'' ">
+                    <p>{{day3week}}</p>
+                    <p>{{day3 | date:'MM'}}月{{day3 | date:'dd'}}日</p>
+                </li>
+                <li data-t="{{day4 | date:'yyyy-MM-dd'}}"
+                    ng-class="{{day4 | date:'yyyy-MM-dd'}}=={{date}} ? 'active' :'' ">
+                    <p>{{day4week}}</p>
+                    <p>{{day4 | date:'MM'}}月{{day4 | date:'dd'}}日</p>
+                </li>
+                <li data-t="{{day5 | date:'yyyy-MM-dd'}}"
+                    ng-class="{{day5 | date:'yyyy-MM-dd'}}=={{date}} ? 'active' :'' ">
+                    <p>{{day5week}}</p>
+                    <p>{{day5 | date:'MM'}}月{{day5 | date:'dd'}}日</p>
+                </li>
+                <li data-t="{{day6 | date:'yyyy-MM-dd'}}"
+                    ng-class="{{day6 | date:'yyyy-MM-dd'}}=={{date}} ? 'active' :'' ">
+                    <p>{{day6week}}</p>
+                    <p>{{day6 | date:'MM'}}月{{day6 | date:'dd'}}日</p>
+                </li>
+                <li data-t="{{day7 | date:'yyyy-MM-dd'}}"
+                    ng-class="{{day7 | date:'yyyy-MM-dd'}}=={{date}} ? 'active' :'' ">
+                    <p>{{day7week}}</p>
+                    <p>{{day7 | date:'MM'}}月{{day7 | date:'dd'}}日</p>
+                </li>
+                <li data-t="{{day8 | date:'yyyy-MM-dd'}}"
+                    ng-class="{{day8 | date:'yyyy-MM-dd'}}=={{date}} ? 'active' :'' ">
+                    <p>{{day8week}}</p>
+                    <p>{{day8 | date:'MM'}}月{{day8 | date:'dd'}}日</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- <ul class="book_site">
+    <li class="book_btnli">A场</li>
+    <li>B场</li>
+    <li>C场</li>
+    <li>D场</li>
+    <li class="book_width">红土场</li>
+    <li class="book_width">钻石球馆</li>
+</ul> -->
+    <ul class="book_site">
+        <li ng-repeat="x in venList" ng-click="tab($index,$event.target)" ng-class="$index==0 ? 'book_btnli' :'' ">
+            {{x.vname}}<input
+		type="hidden" value="{{x.vid}}"></li>
+    </ul>
+    <div class="book_con">
+        <div class="book_place">
+            <ul>
+                <li ng-repeat="x in park">{{x.parkname}}</li>
+            </ul>
+        </div>
+        <ul class="fl book_time" style="overflow-y:hidden;">
+            <li ng-repeat="x in reserveTime"><span>{{x.time}}</span><span>:00</span><span>-</span></li>
+        </ul>
+        <div class="book_site_con">
+            <ul ng-repeat="y in park track by $index">
+                <li goodsid="goodid_{{y.id}}_{{x.time}}" price={{x.bookmoney}} ng-repeat="x in y.reserve"
+                    content="{{x.time}}:00-{{x.time+1}}:00 {{y.parkname}}"
+                    course_content="{{y.parkname}},{{y.id}},{{x.time}},{{x.time}}:00-{{x.time+1}}:00"
+                    id="block_{{y.id}}-{{x.time}}" userid="{{x.userid}}" interval="{{x.interval}}"
+                    detailid="{{x.detailid}}" orderno="{{x.orderno}}" bookstatus="{{x.bookstatus}}" group_ids=""
+                    time="{{x.time}}" fixedflag="{{x.fixedflag}}"
+                    ng-class="{{x.bookstatus}}==0? 'optional' :{{x.bookstatus}}==1? x.userid==userid?'reserve':'disable' :{{x.bookstatus}}==2? 'disable' :{{x.bookstatus}}==4? x.userid==userid?'reserve':'lock' :'' ">
+                </li>
+            </ul>
+            <!-- 0可选  available    1已预约    reserve   2已过期  disable   3 禁用        4锁定     lock   selected 选中 -->
+
+        </div>
+    </div>
+
+    <ul class="book_explain">
+        <li>
+            <span></span>已预订
+        </li>
+        <li>
+            <span></span>可预订
+        </li>
+        <li>
+            <span></span>已选择
+        </li>
+        <li>
+            <span></span>我的预订
+        </li>
+        <li>
+            <span></span>锁定
+        </li>
+    </ul>
+    <div class="book_bot">
+        <div class="book_site_bot">
+            <p class="book-tip">最多可预订{{timeSurplus}}片场地</p>
+            <ul class="book-orderinfo" style="display: none;">
+
+            </ul>
+        </div>
+        <div class="confirm_btn book_btn J_submit">提交订单</div>
+    </div>
+    <div class="book_layer" style="display: none;">
+        <div class="book_been">
+            <h3>我的预定</h3>
+            <ul class="book_been_con">
+                <!-- <li><span>钻石球馆</span></li>
+            <li><span>订单编号：</span><span>201707061803</span></li>
+            <li><span>场地名称：</span><span>钻石四号</span></li>
+            <li><span>场地时间：</span><span><a>2017-07-21</a><a>13:00-14:00</a> </span></li>
+            <li><span>场地价格：</span><span>250元</span></li> -->
+            </ul>
+            <div class="book_been_btn">
+                <!-- <a>取消</a>
+            <a>退款</a> -->
+            </div>
+        </div>
+    </div>
+    <!-- <div class="book_hint" style="display: none;">
+	<div class="book_hint_top">
+		<h3>提示</h3>
+		<p>您还未登录，请登录以后选择场地</p>
+	</div>
+	<div class="book_hint_btn">
+		<a>取消</a>
+		<a>确定</a>
+	</div>
+</div> -->
+    <div class="book_refund" style="display: none;">
+        <div class="book_been">
+            <h3>我的预定</h3>
+            <ul class="book_been_con">
+            </ul>
+            <div class="book_been_btn">
+            </div>
+        </div>
+    </div>
+    <!--loding-->
+    <div class="loding" style="display: none;">
+        <div class="loding_img">
+            <span>
+            <img src="/TennisCenterInterface/img/loading.gif">
+        </span>
+        </div>
+        <p>加载中...</p>
+    </div>
+    <!--loding   end-->
+    <script>
+        $(function(){
+
+        //获取时间/场地的高
+        var h = $(window).height();
+        var htopleft = $(".header").height() + $(".book-date").height() + $(".book_site").height() + $(".book_place").height() + $(".book_explain").height() + $(".book_bot").height();
+        $(".book_time").height(h - htopleft -120);
+        $(".book_site_con").height(h - htopleft -120);
+
+        //时间/场地随着场地滚动而滚动
+        var site = $(".book_place ul");
+        var time = $(".book_time");
+        $(".book_site_con").scroll(function(){
+            time.prop("scrollTop", this.scrollTop);
+            site.prop("scrollLeft", this.scrollLeft);
+        });
+
+        $(".book_time").on("touchstart", function(e) {
+            e.preventDefault();
+            return false;
+
+        });
+        $(".book_time").on("touchmove", function(e) {
+            e.preventDefault();
+            return false;
+        });
+        $(".book_time").on("touchend", function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+    });
+    </script>
+</body>
+
+</html>

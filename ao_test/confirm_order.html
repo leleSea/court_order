@@ -1,603 +1,716 @@
-HTTP/1.1 200 OK
-Server: nginx/1.18.0
-Date: Tue, 19 Apr 2022 05:37:24 GMT
-Content-Type: text/html;charset=UTF-8
-Connection: keep-alive
-Content-Length: 19479
-
 <!DOCTYPE html>
 <html ng-app="myApp">
 <head lang="en">
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
-	<script type="text/javascript" src="/TennisCenterInterface/js/jquery-1.12.3.min.js"></script>
-	<script type="text/javascript" src="/TennisCenterInterface/js/importJs.js?20210816"></script>
-	<script src="/TennisCenterInterface/js/crypto-js-4.0.0/crypto-js.js"></script>
-	<script src="/TennisCenterInterface/js/captcha/js/verify.js?v=202108101"></script>
-	<script src="/TennisCenterInterface/js/captcha/js/ase.js"></script>
-	<link rel="stylesheet" href="/TennisCenterInterface/js/captcha/css/verify.css?v=202108101"/>
-	<link href="/TennisCenterInterface/css/register.css" rel="stylesheet"/>
-	<title>确认订单--场地</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no"/>
+    <meta http-equiv="cache-control" content="no-cache">
+    <script type="text/javascript" src="/TennisCenterInterface/js/jquery-1.12.3.min.js"></script>
+    <script type="text/javascript" src="/TennisCenterInterface/js/importJs.js"></script>
+    <script src="/TennisCenterInterface/js/crypto-js-4.0.0/crypto-js.js"></script>
+    <script src="/TennisCenterInterface/js/captcha/js/verify.js?v=20210902"></script>
+    <script src="/TennisCenterInterface/js/captcha/js/ase.js"></script>
+    <link rel="stylesheet" href="/TennisCenterInterface/js/captcha/css/verify.css?v=202108101"/>
+    <link href="/TennisCenterInterface/css/register.css" rel="stylesheet"/>
+    <title>确认订单--场地</title>
 </head>
 <style>
-	.loding {
-		z-index: 9999;
-	}
-	.confirm_btn_msg{margin: 0 0.625rem;background: #2bb061;line-height: 2.5rem;text-align: center;color: #fff;font-size: 1rem;border-radius: 6px;}
+    .surplu_price {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        color: #666666;
+    }
+
+    .cause {
+        font-size: .8rem;
+        color: #666666;
+    }
+    .pay_way_discount {
+        font-size: 0.8rem;
+        line-height: 2.8rem;
+        color: #ff832d;
+        margin-right: 0.6rem;
+    }
+    .maskText {
+        margin-top: 5px;
+        width: 100%;
+        color: #666666;
+        font-size: 14px;
+        display: flex;
+        text-align: center;
+        justify-content: center;
+    }
+    .loding {
+        z-index: 9999;
+    }
+    .confirm_btn_msg{margin: 0 0.625rem;background: #2bb061;line-height: 2.5rem;text-align: center;color: #fff;font-size: 1rem;border-radius: 6px;}
+
 
 </style>
 <body ng-controller="myCtrl">
 <div class="header">
-	<a class="header_back" onClick="javascript: history.go(-1);"></a>
-	<input type="hidden" name="captchaVerification" id="captchaVerification"/>
-	<h3>确认订单</h3>
-	<!--<a class="header_right">订单</a>-->
+    <a class="header_back" onClick="javascript: history.go(-1);"></a>
+    <input type="hidden" name="captchaVerification" id="captchaVerification"/>
+    <h3>确认订单</h3>
+    <!--<a class="header_right">订单</a>-->
 </div>
 <div class="confirm_con">
-	<ul class="confirm_venue">
-		<li>
-			<span class="fl confirm_left">项目：</span>
-			<a class="fl">{{parkType}}</a>
-		</li>
-		<li>
-			<span class="fl confirm_left">日期：</span>
-			<a class="fl">{{date}}</a>
-		</li>
-		<li>
-			<span class="fl confirm_left">场地：</span>
-			<a class="fl confirm_venue-detail">
+    <ul class="confirm_venue">
+        <li>
+            <span class="fl confirm_left">项目：</span>
+            <a class="fl">{{parkType}}</a>
+        </li>
+        <li>
+            <span class="fl confirm_left">日期：</span>
+            <a class="fl">{{date}}</a>
+        </li>
+        <li>
+            <span class="fl confirm_left">场地：</span>
+            <a class="fl confirm_venue-detail">
                 <span ng-repeat="x in Price">{{x.parkname}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                {{x.time}}:00-{{x.time*1+1}}:00<p class="fr">{{x.price}}元</p></span>
-			</a>
-		</li>
-	</ul>
+                {{x.time}}:00-{{x.time * 1 + 1}}:00<p class="fr">{{x.price}}元</p></span>
+            </a>
+        </li>
+    </ul>
 </div>
 <div class="pay">
-	<ul class="pay_way">
-		<li class="noVipCard" style="display:none" onclick="window.location.href='/TennisCenterInterface/weixin/home/apply_vip.html'">
-			<div class="fl pay_way_img">
+    <ul class="pay_way" style="margin-bottom: 6rem;">
+        <li class="noVipCard" style="display:none"
+            onclick="window.location.href='/TennisCenterInterface/weixin/home/apply_vip.html'">
+            <div class="fl pay_way_img">
 	            <span>
 	                <img src="/TennisCenterInterface/img/way1.png">
 	            </span>
-			</div>
-			<span class="fl pay_way_name">会员卡</span>
-			<span class="fr pay_way_novip">开通会员，最高可享4折优惠，立即开通</span>
-		</li>
-		<li class="confirm_position">
-			<div class="fl pay_way_img">
-	            <span>
-	                <img src="/TennisCenterInterface/img/way1.png">
-	            </span>
-			</div>
-			<span class="fl pay_way_name">会员卡<span class="pay_way_result">{{cardnumber}}</span><span class="pay_vip_span"><a class="pay_vip_sive">会员专享</a><a class="pay_vip_type">{{cardtype}}</a></span></span>
-			<div class="fr pay_way_check pay_way_check2" id="0" ng-click="payWay($event)"></div>
-			<span class="fr pay_way_money">{{cardPrice}}元</span>
-			<p class="pay_vip_discount"><span>减</span>￥{{getReduce}}</p>
-		</li>
-		<li>
-			<div class="fl pay_way_img">
-	            <span>
-	                <img src="/TennisCenterInterface/img/way3.png">
-	            </span>
-			</div>
-			<span class="pay_way_name">微信</span>
-			<div class="fr pay_way_check" id="2" ng-click="payWay($event)"></div>
-			<span class="fr pay_way_money">{{wxPrice}}元</span>
-		</li>
-		<li id="timePrice">
-			<div class="fl pay_way_img">
-	            <span>
-	                <img src="/TennisCenterInterface/img/way4.png">
-	            </span>
-			</div>
-			<span class="pay_way_name">赠送<span class="pay_way_result">剩余{{surplustime}}小时</span></span>
-			<div class="fr pay_way_check" id="3" ng-click="payWay($event)"></div>
-			<span class="fr pay_way_money">{{timePrice}}小时</span>
-		</li>
-	</ul>
+            </div>
+            <span class="fl pay_way_name">会员卡</span>
+            <span class="fr pay_way_novip">开通会员，最高可享4折优惠，立即开通</span>
+        </li>
+<!--        <li class="confirm_position" style="padding-bottom: 0;" data-type="2">-->
+<!--            <div class="fl pay_way_img">-->
+<!--	            <span>-->
+<!--	                <img src="/TennisCenterInterface/img/way3.png">-->
+<!--	            </span>-->
+<!--            </div>-->
+<!--            <span class="pay_way_name">微信</span>-->
+<!--            <div class="fr pay_way_check pay_way_check2" data-type="2"></div>-->
+<!--            <span class="fr pay_way_money">{{wxPrice}}元</span>-->
+<!--&lt;!&ndash;            <span class="fr pay_way_discount">会员限时折扣</span>&ndash;&gt;-->
+
+<!--        </li>-->
+    </ul>
 </div>
 
 <div class="confirm_bot">
-	<!--<p class="confirm_phone"><span>手机号：</span>151****1234</p>-->
-	<div class="confirm_pay">
-		<div class="confirm_pay_top">
-			<p class="fl confirm_retreat"><span>退</span>提前24小时可退款</p>
-			<!--<p class="fr confirm_sum">需支付金额：<span>1000元</span></p>-->
-		</div>
-		<div class="confirm_btn" id="confirmbtn">确认订单</div>
-		<div class="confirm_btn_msg" id="confirmbtnmsg" style="display:none">确认订单</div>
-
-	</div>
+    <!--<p class="confirm_phone"><span>手机号：</span>151****1234</p>-->
+    <div class="confirm_pay">
+        <div class="confirm_pay_top">
+            <p class="fl confirm_retreat"><span>退</span>场地使用前24小时可退款</p>
+            <!--<p class="fr confirm_sum">需支付金额：<span>1000元</span></p>-->
+        </div>
+        <div class="confirm_btn" id="confirmbtn">确认订单</div>
+        <div class="confirm_btn_msg" id="confirmbtnmsg" style="display:none">确认订单</div>
+    </div>
 </div>
 <!--获取验证码弹框-->
 <div class="approveMask" style="display: none;">
-	<div class="approvebg">
-		<div class="titletext">验证码</div>
-		<div class="approveDataBg">
-			<div class="approveDataTitle">手机号：</div>
-			<input class="approveDataInput" type="text" value="{{mobile}}" disabled="disabled">
-		</div>
-		<div class="approveDataBg">
-			<input class="approveDataInput" type="text" id="ordercode" placeholder="请输入短信验证码">
-			<a class="maskgetCodeBtn" ><span id="time" ng-click="getCode()">获取验证码</span></a>
-		</div>
-		<div class="suer_btn">确定</div>
-	</div>
+    <div class="approvebg">
+        <div class="titletext">验证码</div>
+        <div class="approveDataBg">
+            <div class="approveDataTitle">手机号：</div>
+            <input class="approveDataInput" type="text" value="{{mobile}}" disabled="disabled">
+        </div>
+        <div class="approveDataBg">
+            <input class="approveDataInput" type="text" id="ordercode" placeholder="请输入短信验证码">
+            <a class="maskgetCodeBtn" ><span id="time" ng-click="getCode()">获取验证码</span></a>
+        </div>
+        <div class="suer_btn">确定</div>
+    </div>
 </div>
-<div id="sliderPopupCaptcha" style="margin-top:50px;">
-	<!--loding-->
-	<div class="loding" style="display: none;">
-		<div class="loding_img">
+<div id="sliderPopupCaptcha" style="margin-top:50px;"></div>
+<!--提示框-->
+<div class="book_refund" style="display: none;">
+    <div class="book_been">
+        <ul class="book_been_con">
+            <li><div class="maskText">您预定的场地距开场时间已不足24小时，预定成功后将无法申请无条件退款，如需取消仅可申请代售。</div></li>
+        </ul>
+        <div class="book_been_btn">
+            <a ng-click="canceClick()">取消</a>
+            <a ng-click="sureOrderClick()">确认订单</a>
+        </div>
+    </div>
+</div>
+<!--loding-->
+<div class="loding" style="display: none;">
+    <div class="loding_img">
         <span>
             <img src="/TennisCenterInterface/img/loading.gif">
         </span>
-		</div>
-		<p>加载中...</p>
-	</div>
-	<!--loding   end-->
-
-	<script>
-
-		var app = angular.module('myApp', []);
-		var user = Util.get("user");
-		// 	var cardType = Util.getCard();
-		if(user!=undefined&&user!=null&&user!=""){
-			userobj = eval('(' + user + ')');
-			var userid = userobj.id;
-		}else{
-			var userid ="-1";
-		}
-
-
-		var cardSum ="";
-		var wxSum ="";
-		//当前用户手机号
-		var mobile = userobj.loginname;
-
-		//订场状态 type 0正常 1转场
-		var type = ""
-		//订单号
-		var oldorderno = "";
-		//之前场地id
-		var detailids = "";
+    </div>
+    <p>加载中...</p>
+</div>
+<!--loding   end-->
+<script>
+    var app = angular.module('myApp', []);
+    var user = Util.get("user");
+    // 	var cardType = Util.getCard();
+    if (user != undefined && user != null && user != "") {
+        userobj = eval('(' + user + ')');
+        var userid = userobj.id;
+    } else {
+        var userid = "-1";
+    }
+    //当前用户手机号
+    var mobile = userobj.loginname;
+    //支付方式：3赠送小时 、2微信、1支付宝、0会员卡
+    var paywaycode = 2;
+    //卡号
+    var cardnumber = '';
 
 
-		app.controller('myCtrl', function($scope,$http) {
-			$(".loding").show();
-			$scope.mobile =userobj.loginname;
+    //订场状态 type 0正常 1转场
+    var type = ""
+    //订单号
+    var oldorderno = "";
+    //之前场地id
+    var detailids = "";
+    //场地数据
+    var sitArr = [];
 
-			//订场状态 type 0正常 1转场
-			type = decodeURI(Util.GetQueryString("type"));//类型
-			//订单号
-			oldorderno = decodeURI(Util.GetQueryString("orderno"));
-			//之前场地id
-			detailids = decodeURI(Util.GetQueryString("detailids"));
+    app.controller('myCtrl', function ($scope, $http) {
+        $(".loding").show();
+        $scope.mobile =userobj.loginname;
 
-			/* if(cardType!=undefined&&cardType!=null&&cardType!=""){
-                $scope.cardnumber =cardType.cardnumber;
-                $scope.cardtype =cardType.cardtype;
-                var standflag =cardType.standflag;
-                if(standflag==undefined){
-                    $(".confirm_position").hide();
-                    $("#0").removeClass("pay_way_check2");
-                    $("#2").addClass("pay_way_check2");
-                    $(".noVipCard").show();
+        //订场状态 type 0正常 1转场
+        type = decodeURI(Util.GetQueryString("type"));//类型
+        //订单号
+        oldorderno = decodeURI(Util.GetQueryString("orderno"));
+        //之前场地id
+        detailids = decodeURI(Util.GetQueryString("detailids"));
+
+        $scope.vid = decodeURI(Util.GetQueryString("vid"));
+        $scope.vname = decodeURI(Util.GetQueryString("vname"));//场馆
+        $scope.parkId = decodeURI(Util.GetQueryString("parkId"));
+        $scope.parkType = decodeURI(Util.GetQueryString("parkType"));//项目
+        $scope.date = decodeURI(Util.GetQueryString("date"));//日期
+
+        fields = decodeURI(Util.GetQueryString("fields"));//场地
+        $scope.fields = eval('(' + fields + ')');
+
+        var cardPrice = "";
+        var zfbPrice = "";
+        var wxPrice = "";
+        var timePrice = "";
+        $http({
+            method: 'post',
+            url: '/TennisCenterInterface/pmPark/showPriceByUserCard.action',
+            // data: { "userid": userid, "parkList": fields.toString()}
+            data: {"userid": userid, "parkList": fields.toString()},
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            transformRequest: function (data) {
+                return $.param(data);
+            }
+        }).then(function successCallback(response) {
+            $(".loding").hide();
+            var data = response.data;
+            if (data.respCode == "1001") {
+                //卡列表
+                var cardList = data.datas.cardList;
+
+                $.each(cardList, function (index, repair) {
+                    var Card = repair.Card;
+                    if(Card){
+                        //卡的状态
+                        var cardState = repair.cardState;
+                        //卡的金额
+                        var cardPrice = repair.cardPrice;
+                        //不可以使用
+                        if (cardState.code == 4) {
+
+                            var li = '<li class="confirm_position" data-type="4">\n' +
+                                '            <div class="fl pay_way_img">\n' +
+                                '                    <span>\n' +
+                                '                     <img src="/TennisCenterInterface/img/huiyuanka-huise.png">\n' +
+                                '                         </span>\n' +
+                                '            </div>\n' +
+                                '            <span class="fl pay_way_name">' + Card.cardtype + '<span class="pay_way_result">' + Card.cardnumber + '</span><span class="pay_vip_span"><a\n' +
+                                '                    class="cause">不可用原因：' + cardState.message + '</a></span></span>\n' +
+                                '            <div class="fr pay_way_check"></div>\n' +
+                                '        </li>';
+                            $(".pay_way").append(li);
+                        } else {
+                            var li = '<li class="confirm_position" data-cardnumber="'+Card.cardnumber+'" data-type="0">\n' +
+                                '            <div class="fl pay_way_img">\n' +
+                                '                    <span>\n' +
+                                '                     <img src="/TennisCenterInterface/img/way1.png">\n' +
+                                '                         </span>\n' +
+                                '            </div>\n' +
+                                '            <span class="fl pay_way_name">' + Card.cardtype + '<span class="pay_way_result">' + Card.cardnumber + '</span><span class="pay_vip_span"><a\n' +
+                                '                    class="pay_vip_sive">会员专享</a></span></span>\n' +
+                                '            <div class="fr pay_way_check "></div>\n' +
+                                '            <span class="fr pay_way_money">' + cardPrice.sum + '元</span>\n' +
+                                '            <span class="fr pay_way_money surplu_price">当前余额' + Card.surplus + '元</span>\n' +
+                                '        </li>';
+                            $(".pay_way").append(li);
+
+                            $(".confirm_position").on('click', function () {
+                                var type = $(this).data("type")
+                                cardnumber = $(this).data("cardnumber")
+                                paywaycode = type;
+                                if (type != 4) {
+                                    // $(".refund_detail").removeClass("refund_color");
+                                    $(".pay_way_check").removeClass("pay_way_check2")
+                                    $(this).find(".pay_way_check").addClass("pay_way_check2");
+                                }
+                            })
+                        }
+
+                    }
+                });
+
+                var isHaveCard = 0;
+                //默认选中会员卡第一个
+                if (cardList.length > 0) {
+                    var cardListElement = cardList[0];
+                    var Card = cardListElement.Card;
+                    if (Card) {
+                        var type = $(".confirm_position").eq(0).data("type");
+                        if (type != 4) {
+                            cardnumber = $(".confirm_position").eq(0).data("cardnumber");
+                            paywaycode = type;
+                            $(".pay_way_check").removeClass("pay_way_check2")
+                            $(".confirm_position").eq(0).find(".pay_way_check").addClass("pay_way_check2");
+                            isHaveCard = 1;
+                        }
+                    }
                 }
-            } */
-			$http({
-				method: 'post',
-				url: '/TennisCenterInterface/umCard/getCardByUser.action?userid='+userid,
-			}).then(function successCallback(response) {
-				if(response.data.respCode==1001){
-					$scope.cardnumber =response.data.datas.cardnumber;
-					$scope.cardtype =response.data.datas.cardtype;
-					var standflag =response.data.datas.standflag;
-					if(standflag==undefined){
-						$(".confirm_position").hide();
-						$("#0").removeClass("pay_way_check2");
-						$("#2").addClass("pay_way_check2");
-						$(".noVipCard").show();
-					}
-				}
-			}, function errorCallback(response) {
-				openAlertMsg(response.data.respMsg);
 
-			});
-			$scope.vid = decodeURI(Util.GetQueryString("vid"));
-			$scope.vname = decodeURI(Util.GetQueryString("vname"));//场馆
-			$scope.parkId = decodeURI(Util.GetQueryString("parkId"));
-			$scope.parkType = decodeURI(Util.GetQueryString("parkType"));//项目
-			$scope.date = decodeURI(Util.GetQueryString("date"));//日期
+                if (isHaveCard == 0){
+                    var li = '<li class="confirm_position" style="padding-bottom: 0;" data-type="2">' +
+                        '<div class="fl pay_way_img">' +
+                        '   <span>' +
+                        '   <img src="/TennisCenterInterface/img/way3.png">' +
+                        '   </span>' +
+                        '   </div>' +
+                        '   <span class="pay_way_name">微信</span>' +
+                        '   <div class="fr pay_way_check pay_way_check2" data-type="2"></div>' +
+                        '   <span class="fr pay_way_money">'+ data.datas.wxPrice.sum +'元</span>' +
+                        '                        </li>';
+                    $(".pay_way").append(li);
+                    $(".confirm_position").on('click', function () {
+                        var type = $(this).data("type")
+                        cardnumber = $(this).data("cardnumber")
+                        paywaycode = type;
+                        if (type != 4) {
+                            // $(".refund_detail").removeClass("refund_color");
+                            $(".pay_way_check").removeClass("pay_way_check2")
+                            $(this).find(".pay_way_check").addClass("pay_way_check2");
+                        }
+                    })
+                } else{
+                    var li = '<li class="confirm_position" style="padding-bottom: 0;" data-type="2">' +
+                        '<div class="fl pay_way_img">' +
+                        '   <span>' +
+                        '   <img src="/TennisCenterInterface/img/way3.png">' +
+                        '   </span>' +
+                        '   </div>' +
+                        '   <span class="pay_way_name">微信</span>' +
+                        '   <div class="fr pay_way_check" data-type="2"></div>' +
+                        '   <span class="fr pay_way_money">'+ data.datas.wxPrice.sum +'元</span>' +
+                        '                        </li>';
+                    $(".pay_way").append(li);
+                    $(".confirm_position").on('click', function () {
+                        var type = $(this).data("type")
+                        cardnumber = $(this).data("cardnumber")
+                        paywaycode = type;
+                        if (type != 4) {
+                            // $(".refund_detail").removeClass("refund_color");
+                            $(".pay_way_check").removeClass("pay_way_check2")
+                            $(this).find(".pay_way_check").addClass("pay_way_check2");
+                        }
+                    })
+                }
 
-			fields = decodeURI(Util.GetQueryString("fields"));//场地
-			$scope.fields = eval('(' + fields + ')');
+                // console.log(cardList.length)
+                // if (cardList.length < 1){
+                //     $(".noVipCard").show();
+                // }else {
+                //     $(".noVipCard").hide();
+                // }
+                //微信价格
+                $scope.wxPrice = data.datas.wxPrice.sum;//微信sum价格
+                cardPrice = data.datas.zfbPrice.priceinfo;//会员卡
+                //默认卡支付
+                $scope.Price = cardPrice;
+                //场地数据
+                sitArr = $scope.Price;
 
-			var cardPrice = "";
-			var zfbPrice = "";
-			var wxPrice = "";
-			var timePrice="";
-			$http({
-				method: 'post',
-				url: '/TennisCenterInterface/pmPark/showPriceByUser.action',
-				// data: { "userid": userid, "parkList": fields.toString()}
-				data: { "userid": userid, "parkList": fields.toString()},
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				transformRequest: function (data) {
-					return $.param(data);
-				}
-			}).then(function successCallback(response) {
-				$(".loding").hide();
-				var data = response.data;
-				//console.log(JSON.stringify(data));
-				if(data.respCode=="1001"){
-					$scope.cardState = data.datas.cardState;//卡状态
-					$scope.cardPrice = data.datas.cardPrice.sum;//会员卡sum价格
-					cardSum = data.datas.cardPrice.sum;//会员卡sum价格
-					$scope.zfbPrice = data.datas.zfbPrice.sum;//支付宝sum价格
-					$scope.wxPrice = data.datas.wxPrice.sum;//微信sum价格
-					wxSum = data.datas.wxPrice.sum;//微信sum价格
-					if(isEmptyObject(data.datas.timePrice)){
-						$("#timePrice").hide();
-					}else{
-						$scope.timePrice = data.datas.timePrice.sum;//赠送小时数sum价格
-						timePrice =data.datas.timePrice.priceinfo;
-						$scope.surplustime =data.datas.cardState.surplustime;
-					}
-					$scope.getReduce = ($scope.wxPrice-$scope.cardPrice).toFixed(2);
-
-					cardPrice = data.datas.cardPrice.priceinfo;//会员卡
-					zfbPrice = data.datas.zfbPrice.priceinfo;//支付宝
-					wxPrice = data.datas.wxPrice.priceinfo;//微信
-					//默认卡支付
-					$scope.Price =cardPrice;
-				}else{
-					openAlertMsg(data.respMsg);
-				}
-				//console.log("success"+response.data);
-				// 请求成功执行代码
-			}, function errorCallback(response) {
-				openAlertMsg(response.data.respMsg);
-				//console.log("error"+response.data);
-				// 请求失败执行代码
-			});
-
-			$scope.payWay=function(event){
-				var code=$(event.target).attr("id");
-				if(code==0){
-					$scope.Price = cardPrice;
-				}else if(code==1){
-					$scope.Price = zfbPrice;
-				}else if(code==2){
-					$scope.Price = wxPrice;
-				}else if(code==3){
-					$scope.Price =timePrice;
-				}
-			};
-
-			queryIsCodeTime();
+            } else {
+                openAlertMsg(data.respMsg);
+            }
+            //console.log("success"+response.data);
+            // 请求成功执行代码
+        }, function errorCallback(response) {
+            openAlertMsg(response.data.respMsg);
+            //console.log("error"+response.data);
+            // 请求失败执行代码
+        });
 
 
-		});
+        //取消
+        $scope.canceClick = function () {
+            $(".book_refund").hide();
+        };
+        //确认订单
+        $scope.sureOrderClick = function () {
+            $(".book_refund").hide();
+            //生成订单
+            produceOrder("","");
+        }
 
-		$(function(){
-			$('.mwui-switch-btn').each(function() {
-				$(this).bind("click", function() {
-					var btn = $(this).find("span");
-					btn.toggleClass('off');
-					$(this).toggleClass('y_tgg');
-					return false;
-				});
-			});
-
-			//选择支付方式
-			$(".pay_way li").click(function(){
-				$(this).find(".pay_way_check").addClass("pay_way_check2");
-				$(this).siblings("li").find(".pay_way_check").removeClass("pay_way_check2");
-			});
-		});
+        queryIsCodeTime();
 
 
-		//获取是否需要验证码
-		function queryIsCodeTime() {
-			var user = Util.get("user");
-			if(user!=undefined&&user!=null&&user!=""){
-				userobj = eval('(' + user + ')');
-				var userid = userobj.id;
-			}else{
-				var userid ="-1";
-			}
-			//获取是否需要验证码
-			toAjaxCRUDCallBack("/TennisCenterInterface/umUser/queryIsCodeTime.action?userid=" + userid,{
-			},function(data){
-				if(data.respCode=="1001") {
-					if (data.datas == 0) {
-						//不需要验证码 正常走下单
-						// produceOrder('', '');
-						$(".confirm_btn_msg").hide();
-						$(".confirm_btn").show();
-					} else if (data.datas == 1){
-						$(".loding").hide();
-						//弹出输入验证码弹框
-						// $(".approveMask").show();
-						$(".confirm_btn_msg").show();
-						$(".confirm_btn").hide();
-					}
-				}
-			});
-		}
+    });
 
-		/*
-         * 支付 验证码检测成功
-         */
-		function checksuccess(){
+    $(function () {
+        $('.mwui-switch-btn').each(function () {
+            $(this).bind("click", function () {
+                var btn = $(this).find("span");
+                btn.toggleClass('off');
+                $(this).toggleClass('y_tgg');
+                return false;
+            });
+        });
 
-			if(cardSum==0||wxSum==0){
-				openAlertMsg("该场地暂不支持当前预订方式。");
-				$(".loding").hide();
-				return;
-			}
-			// $(".loding").show();
-			produceOrder("","");
-		};
-		//判断对象是否为空，true为空，false不为空
-		function isEmptyObject(obj){
-			for(var key in obj){
-				return false
-			};
-			return true
-		};
-		//生成订单
-		function produceOrder(mobile,ordercode){
-			//正常下单
-			if (type == 0){
-				var code=$(".pay_way_check2").attr("id");
-				var captchaVerification =  $("#captchaVerification").val();
-				toAjaxCRUDCallBack("/TennisCenterInterface/pmPark/addParkOrder.action",{
-					userid:userid,
-					parkList:fields,
-					paywaycode:code,
-					addOrderType:"wx",
-					//新增参数
-					mobile:mobile,
-					ordercode:ordercode,
-					captchaVerification:captchaVerification
-				},function(data){
-					if(data != null && data != "" && data.respCode == '1001'){
-						var orderNo = data.datas.orderNo;
-						var pollingCount = 0;
-						// 轮询调用接口
-						var interval = setInterval(function(){
-							toAjaxCRUDCallBack("/TennisCenterInterface/pmPark/getParkOrderState.action",{
-								orderNo: orderNo
-							},function(res){
-								if(pollingCount >= 180){ // 3分钟还没有反应则停止轮询
-									clearInterval(interval);
-									$(".loding").hide();
-									$(".approveMask").hide();
-									openAlertMsg("场地预定失败请重新选择");
-								}
-								if(res != 0){
-									if(res.respCode=='1001'){
-										// 预定成功
-										if(code==3){
-											window.location.href='/TennisCenterInterface/weixin/home/pay_gift_hour.html?orderNo='+data.datas.orderNo+'&cardType='+code+'&orderType=siteReserve';
-										}else {
-											window.location.href='/TennisCenterInterface/weixin/serve/pay_commo.html?orderNo='+data.datas.orderNo+'&cardType='+code+'&orderType=siteReserve';
-										}
-									}else{
-										openAlertMsg(res.respMsg);
-									}
-									clearInterval(interval);
-									$(".loding").hide();
-									$(".approveMask").hide();
-								}
-								pollingCount++;
-							});
-						}, 1000);
-					}else{
-						$(".loding").hide();
-						$(".approveMask").hide();
-						openAlertMsg(data.respMsg);
-					}
-				},function(res){
-					var data = JSON.parse(res.responseText);
-					openAlertMsg(data.respMsg);
-					$(".loding").hide();
-				});
-
-			}else if(type == 1){
-				//转场下单
-				var code=$(".pay_way_check2").attr("id");
-
-				var reserveDetailIds =  $.parseJSON(detailids);
-
-				var ids = JSON.stringify(reserveDetailIds);
-				console.log(ids)
-
-				toAjaxCRUDCallBack("/TennisCenterInterface/pmPark/changefield.action",{
-					userid:userid,
-					parkList:fields,
-					paywaycode:code,
-					addOrderType:"wx",
-					//新增参数
-					mobile:mobile,
-					ordercode:ordercode,
-					//新增转场惨数
-					oldorderNo:oldorderno,
-					reserveDetailIds:ids
-				},function(data){
-					if(data != null && data != "" && data.respCode == '1001'){
-						var orderNo = data.datas.orderNo;
-						var pollingCount = 0;
-						// 轮询调用接口
-						var interval = setInterval(function(){
-							toAjaxCRUDCallBack("/TennisCenterInterface/pmPark/getParkOrderState.action",{
-								orderNo: orderNo
-							},function(res){
-								if(pollingCount >= 180){ // 3分钟还没有反应则停止轮询
-									clearInterval(interval);
-									$(".loding").hide();
-									$(".approveMask").hide();
-									openAlertMsg("场地预定失败请重新选择");
-								}
-								if(res != 0){
-									if(res.respCode=='1001'){
-										// 预定成功
-										if(code==3){
-											window.location.href='/TennisCenterInterface/weixin/home/pay_gift_hour.html?orderNo='+data.datas.orderNo+'&cardType='+code+'&orderType=siteReserve';
-										}else {
-											window.location.href='/TennisCenterInterface/weixin/serve/pay_commo.html?orderNo='+data.datas.orderNo+'&cardType='+code+'&orderType=siteReserve';
-										}
-									}else{
-										openAlertMsg(res.respMsg);
-									}
-									clearInterval(interval);
-									$(".loding").hide();
-									$(".approveMask").hide();
-								}
-								pollingCount++;
-							});
-						}, 1000);
-					}else{
-						$(".loding").hide();
-						$(".approveMask").hide();
-						openAlertMsg(data.respMsg);
-					}
-				},function(res){
-					var data = JSON.parse(res.responseText);
-					openAlertMsg(data.respMsg);
-					$(".loding").hide();
-				});
+    });
 
 
-			}
+    //提交下单
+    $(".suer_btn").click(function(){
+
+        var ordercode = document.getElementById("ordercode").value
+
+        //手机号
+        if(mobile==""||mobile==null||mobile==undefined){
+            openAlertMsg("手机号不能为空");
+            return;
+        }else if(mobile.length!=11){
+            openAlertMsg("请输入正确的手机号");
+            return;
+        }
+        if(ordercode==""||ordercode==null||ordercode==undefined){
+            openAlertMsg("验证码不能为空");
+            return;
+        }else if(ordercode.length!=4){
+            openAlertMsg("请输入正确的验证码");
+            return;
+        }
+
+        //下单
+        produceOrder(mobile,ordercode);
 
 
-		}
-		var user = Util.get("user");
-		if(user!=undefined&&user!=null&&user!=""){
-			userobj = eval('(' + user + ')');
-			var userid = userobj.id;
-		}else{
-			var userid ="-1";
-		}
-
-
-		//需要短信验证码提交下单
-		$(".confirm_btn_msg").click(function(){
-			//弹出输入验证码弹框
-			$(".approveMask").show();
-		});
-
-		//获取验证码
-		$(".maskgetCodeBtn").click(function(){
-			$(".code").show();
-			//手机号
-			if(mobile==""||mobile==null||mobile==undefined){
-				openAlertMsg("手机号不能为空");
-				return;
-			}else if(mobile.length!=11){
-				openAlertMsg("请输入正确的手机号");
-				return;
-			}
-			$(".loding").show();
-			toAjaxCRUDCallBack("/TennisCenterInterface/umUser/getOrderCode.action",{
-				mobile:mobile,
-				userId:userid
-			},function(data){
-				if(data!=null && data.respCode=='1001'){
-					//倒计时
-					getCodeTime();
-					openAlertMsg("验证码已发送，请注意查收");
-				}else {
-					openAlertMsg(data.respMsg);
-				}
-				$(".loding").hide();
-			});
-
-
-		});
-
-		//获取验证码，一分钟倒计时
-		function getCodeTime (){
-			$("#time").removeAttr("ng-click");
-			var x = 59,
-					interval;
-			var d = new Date("1111/1/1,0:0:" + x);
-			interval = setInterval(function() {
-				var s = d.getSeconds();
-				document.getElementById("time").disabled=true;
-				s = s < 10 ? "0" + s : s;
-				time.innerHTML = '重新获取('+s+')';
-				if (s == 0) {
-					clearInterval(interval);
-					return time.innerHTML = '重新获取';
-				}
-				d.setSeconds(s - 1);
-			}, 1000);
-		};
-
-
-		//提交下单
-		$(".suer_btn").click(function(){
-
-			var ordercode = document.getElementById("ordercode").value
-
-			//手机号
-			if(mobile==""||mobile==null||mobile==undefined){
-				openAlertMsg("手机号不能为空");
-				return;
-			}else if(mobile.length!=11){
-				openAlertMsg("请输入正确的手机号");
-				return;
-			}
-			if(ordercode==""||ordercode==null||ordercode==undefined){
-				openAlertMsg("验证码不能为空");
-				return;
-			}else if(ordercode.length!=4){
-				openAlertMsg("请输入正确的验证码");
-				return;
-			}
-
-			//下单
-			produceOrder(mobile,ordercode);
-
-
-		});
+    });
 
 
 
-		// 初始化图形验证码  弹出式
-		$('#sliderPopupCaptcha').slideVerify({
-			baseUrl: '',  //服务器请求地址, 不填写就是localhost
-			mode: 'pop',     //展示模式
-			containerId: 'confirmbtn',//pop模式 必填 被点击之后出现行为验证码的元素id
-			imgSize: {       //图片的大小对象,有默认值{ width: '310px',height: '155px'},可省略
-				width: '80%',
-				height: '180px',
-			},
-			barSize: {          //下方滑块的大小对象,有默认值{ width: '310px',height: '50px'},可省略
-				width: '80%',
-				height: '30px',
-			},
-			beforeCheck: function () {  //检验参数合法性的函数  mode ="pop"有效
-				//实现: 参数合法性的判断逻辑, 返回一个boolean值
-				return true
-			},
-			ready: function () {
-			},  //加载完毕的回调
-			success: function (params) { //成功的回调
-				// params为返回的二次验证参数 需要在接下来的实现逻辑回传服务器
-				setTimeout(function () {
-					$("#captchaVerification").val(params.captchaVerification)
-					checksuccess();
-				}, 300);
-			},
-			error: function () {
-			}        //失败的回调
-		});
+    //获取是否需要验证码
+    function queryIsCodeTime() {
+        var user = Util.get("user");
+        if(user!=undefined&&user!=null&&user!=""){
+            userobj = eval('(' + user + ')');
+            var userid = userobj.id;
+        }else{
+            var userid ="-1";
+        }
+        //获取是否需要验证码
+        toAjaxCRUDCallBack("/TennisCenterInterface/umUser/queryIsCodeTime.action?userid=" + userid,{
+        },function(data){
+            if(data.respCode=="1001") {
+                if (data.datas == 0) {
+                    //不需要验证码 正常走下单
+                    // produceOrder('', '');
+                    $(".confirm_btn_msg").hide();
+                    $(".confirm_btn").show();
+                } else if (data.datas == 1){
+                    $(".loding").hide();
+                    //弹出输入验证码弹框
+                    // $(".approveMask").show();
+                    $(".confirm_btn_msg").show();
+                    $(".confirm_btn").hide();
+                }
+            }
+        });
+    }
+
+    /*
+        * 支付 验证码检测成功
+    */
+    function checksuccess(){
+        // console.log(sitArr);
+        //计算时间是否24小时以内
+        //是否大于24小时 0否 1是
+        var isTime = 0
+        for (var i = 0; i < sitArr.length; i++) {
+            var  item = sitArr[i];
+            //拼接日期
+            var siteDate = item.date + " " + item.time + ":00";
+            //适配ios
+            siteDate = siteDate.replace(/-/g, '/')
+            var bookdatetime = 0;
+            if (null != siteDate) {
+                var timestamp2 = Date.parse(new Date(siteDate));
+                bookdatetime = timestamp2 / 1000;
+            }
+
+            //当前时间戳
+            var timestamp = Date.parse(new Date()) / 1000;
+            //一天的时间戳
+            var daytime = 24 * 60 * 60;
 
 
-	</script>
+
+            if (bookdatetime * 1 - timestamp * 1 > daytime * 1){
+                isTime = 1;
+            }else{
+                isTime = 0;
+                break;
+            }
+        }
+
+        if (isTime == 0){
+            $(".book_refund").show();
+        }else {
+            //生成订单
+            produceOrder("","");
+        }
+    };
+
+    //生成订单
+    function produceOrder(mobile,ordercode){
+
+        $(".loding").show();
+
+        var code = $(".pay_way_check2").attr("id");
+
+        //正常下单
+        if (type == 0){
+            var captchaVerification =  $("#captchaVerification").val();
+
+            toAjaxCRUDCallBack("/TennisCenterInterface/pmPark/addParkOrder.action",{
+                userid:userid,
+                parkList:fields,
+                paywaycode: paywaycode,
+                addOrderType: "wx",
+                cardnumber:(cardnumber ? cardnumber : null),
+                //新增参数
+                mobile:mobile,
+                ordercode:ordercode,
+                captchaVerification:captchaVerification
+            },function(data){
+                if(data != null && data != "" && data.respCode == '1001'){
+                    var orderNo = data.datas.orderNo;
+                    var pollingCount = 0;
+                    // 轮询调用接口
+                    var interval = setInterval(function(){
+                        toAjaxCRUDCallBack("/TennisCenterInterface/pmPark/getParkOrderState.action",{
+                            orderNo: orderNo
+                        },function(res){
+                            if(pollingCount >= 180){ // 3分钟还没有反应则停止轮询
+                                clearInterval(interval);
+                                $(".loding").hide();
+                                openAlertMsg("场地预定失败请重新选择");
+                            }
+                            if(res != 0){
+                                if(res.respCode=='1001'){
+                                    // 预定成功
+                                    if(code==3){
+                                        window.location.href='/TennisCenterInterface/weixin/home/pay_gift_hour.html?orderNo='+data.datas.orderNo+'&cardType='+paywaycode+'&orderType=siteReserve';
+                                    }else {
+                                        window.location.href='/TennisCenterInterface/weixin/serve/pay_commo.html?orderNo='+data.datas.orderNo+'&cardType='+paywaycode+'&orderType=siteReserve';
+                                    }
+                                }else{
+                                    openAlertMsg(res.respMsg);
+                                }
+                                clearInterval(interval);
+                                $(".loding").hide();
+                            }
+                            pollingCount++;
+                        });
+                    }, 1000);
+                }else{
+                    $(".loding").hide();
+                    openAlertMsg(data.respMsg);
+                }
+            },function(res){
+                var data = JSON.parse(res.responseText);
+                openAlertMsg(data.respMsg);
+                $(".loding").hide();
+            });
+        }else{
+            //转场下单
+
+            var reserveDetailIds =  $.parseJSON(detailids);
+
+            var ids = JSON.stringify(reserveDetailIds);
+            console.log(ids)
+
+            toAjaxCRUDCallBack("/TennisCenterInterface/pmPark/changefield.action",{
+                userid:userid,
+                parkList:fields,
+                paywaycode: paywaycode,
+                addOrderType: "wx",
+                cardnumber:(cardnumber ? cardnumber : null),
+                //新增转场参数
+                oldorderNo:oldorderno,
+                //新增参数
+                mobile:mobile,
+                ordercode:ordercode,
+                reserveDetailIds:ids
+            },function(data){
+                if(data != null && data != "" && data.respCode == '1001'){
+                    var orderNo = data.datas.orderNo;
+                    var pollingCount = 0;
+                    // 轮询调用接口
+                    var interval = setInterval(function(){
+                        toAjaxCRUDCallBack("/TennisCenterInterface/pmPark/getParkOrderState.action",{
+                            orderNo: orderNo
+                        },function(res){
+                            if(pollingCount >= 180){ // 3分钟还没有反应则停止轮询
+                                clearInterval(interval);
+                                $(".loding").hide();
+                                $(".approveMask").hide();
+                                openAlertMsg("场地预定失败请重新选择");
+                            }
+                            if(res != 0){
+                                if(res.respCode=='1001'){
+                                    // 预定成功
+                                    if(code==3){
+                                        window.location.href='/TennisCenterInterface/weixin/home/pay_gift_hour.html?orderNo='+data.datas.orderNo+'&cardType='+code+'&orderType=siteReserve';
+                                    }else {
+                                        window.location.href='/TennisCenterInterface/weixin/serve/pay_commo.html?orderNo='+data.datas.orderNo+'&cardType='+code+'&orderType=siteReserve';
+                                    }
+                                }else{
+                                    openAlertMsg(res.respMsg);
+                                }
+                                clearInterval(interval);
+                                $(".loding").hide();
+                                $(".approveMask").hide();
+                            }
+                            pollingCount++;
+                        });
+                    }, 1000);
+                }else{
+                    $(".loding").hide();
+                    $(".approveMask").hide();
+                    openAlertMsg(data.respMsg);
+                }
+            },function(res){
+                var data = JSON.parse(res.responseText);
+                openAlertMsg(data.respMsg);
+                $(".loding").hide();
+            });
+        }
+    }
+
+    //判断对象是否为空，true为空，false不为空
+    function isEmptyObject(obj) {
+        for (var key in obj) {
+            return false
+        }
+        ;
+        return true
+    };
+
+    var user = Util.get("user");
+    if(user!=undefined&&user!=null&&user!=""){
+        userobj = eval('(' + user + ')');
+        var userid = userobj.id;
+    }else{
+        var userid ="-1";
+    }
+
+    //需要短信验证码提交下单
+    $(".confirm_btn_msg").click(function(){
+        //弹出输入验证码弹框
+        $(".approveMask").show();
+    });
+    //获取验证码
+    $(".maskgetCodeBtn").click(function(){
+        $(".code").show();
+        //手机号
+        if(mobile==""||mobile==null||mobile==undefined){
+            openAlertMsg("手机号不能为空");
+            return;
+        }else if(mobile.length!=11){
+            openAlertMsg("请输入正确的手机号");
+            return;
+        }
+        $(".loding").show();
+        toAjaxCRUDCallBack("/TennisCenterInterface/umUser/getOrderCode.action",{
+            mobile:mobile,
+            userId:userid
+        },function(data){
+            if(data!=null && data.respCode=='1001'){
+                //倒计时
+                getCodeTime();
+                openAlertMsg("验证码已发送，请注意查收");
+            }else {
+                openAlertMsg(data.respMsg);
+            }
+            $(".loding").hide();
+        });
+
+
+    });
+    //获取验证码，一分钟倒计时
+    function getCodeTime (){
+        $("#time").removeAttr("ng-click");
+        var x = 59,
+            interval;
+        var d = new Date("1111/1/1,0:0:" + x);
+        interval = setInterval(function() {
+            var s = d.getSeconds();
+            document.getElementById("time").disabled=true;
+            s = s < 10 ? "0" + s : s;
+            time.innerHTML = '重新获取('+s+')';
+            if (s == 0) {
+                clearInterval(interval);
+                return time.innerHTML = '重新获取';
+            }
+            d.setSeconds(s - 1);
+        }, 1000);
+    };
+
+    // 初始化图形验证码  弹出式
+    $('#sliderPopupCaptcha').slideVerify({
+        baseUrl: '',  //服务器请求地址, 不填写就是localhost
+        mode: 'pop',     //展示模式
+        containerId: 'confirmbtn',//pop模式 必填 被点击之后出现行为验证码的元素id
+        imgSize: {       //图片的大小对象,有默认值{ width: '310px',height: '155px'},可省略
+            width: '80%',
+            height: '180px',
+        },
+        barSize: {          //下方滑块的大小对象,有默认值{ width: '310px',height: '50px'},可省略
+            width: '80%',
+            height: '30px',
+        },
+        beforeCheck: function () {  //检验参数合法性的函数  mode ="pop"有效
+            //实现: 参数合法性的判断逻辑, 返回一个boolean值
+            return true
+        },
+        ready: function () {
+        },  //加载完毕的回调
+        success: function (params) { //成功的回调
+            // params为返回的二次验证参数 需要在接下来的实现逻辑回传服务器
+            setTimeout(function () {
+                $("#captchaVerification").val(params.captchaVerification)
+                checksuccess();
+            }, 300);
+        },
+        error: function () {
+        }        //失败的回调
+    });
+</script>
 </body>
 </html>

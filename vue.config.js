@@ -11,7 +11,7 @@ let PROXY = {
             }
         },
         '/api/chinaCourt': {
-            target: 'http://ntc.chinaopen.com',
+            target: 'https://ntc.chinaopen.com',
             ws: true,
             changeOrigin: false,
             pathRewrite: {

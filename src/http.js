@@ -8,7 +8,7 @@ axios.defaults.withCredentials = true
 
 export default class http{
     constructor(){
-        this.api = '/api/court'
+        this.api = '/api/chinaCourt'
         // this.api = '/api/court_app'
         // this.api = '/api/chinaCourt'
         this.errorObj = new errorHandle()
@@ -35,7 +35,8 @@ export default class http{
             let contentType = options.headers['Content-Type']
             console.log(contentType)
             if(contentType != 'application/json;charset=UTF-8'){
-                let params = new URLSearchParams();
+                // let params = new URLSearchParams();
+                let params = new FormData();
                 for(var i in options.data){
                     params.append(i, options.data[i])
                 }

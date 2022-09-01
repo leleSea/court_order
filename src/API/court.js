@@ -12,22 +12,22 @@ export default class court{
         this.ballcode = 1
         this.parkstatus = 0
         this.courtAreaList = [
-            {
-                name: 'K场',
-                vid: 13,
-                parktypeinfo: 3
-            },
-            {
-                name: 'G场',
-                vid: 11,
-                parktypeinfo: 3
-            },
+            // {
+            //     name: 'K场',
+            //     vid: 13,
+            //     parktypeinfo: 3
+            // },
+            // {
+            //     name: 'G场',
+            //     vid: 11,
+            //     parktypeinfo: 3
+            // },
             
-            {
-                name: 'G场草地',
-                vid: 11,
-                parktypeinfo: 4
-            },
+            // {
+            //     name: 'G场草地',
+            //     vid: 11,
+            //     parktypeinfo: 4
+            // },
             {
                 name: 'C场',
                 vid: 2,
@@ -45,8 +45,8 @@ export default class court{
             },
             {
                 name: 'P场',
-                vid: 12,
-                parktypeinfo: 1
+                vid: 4,
+                parktypeinfo: 5
             },
             
         ]
@@ -68,11 +68,14 @@ export default class court{
         return this.parkstatus
     }
     async getCourtList(opt){
+        // multipart/form-data; boundary=----WebKitFormBoundary1PfLBc7XoTh5BwjX
+        // application/x-www-form-urlencoded; charset=UTF-8
         opt = opt || {}
         if(!Object.keys(opt).length) return false
         let options = {
             url: '/TennisCenterInterface/pmPark/getParkShowByParam.action',
             data: opt,
+            headers: {'Content-Type': undefined},
             method: 'POST'
         }
         let res = await this._http.request('court', options)
