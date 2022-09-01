@@ -23,7 +23,7 @@ let PROXY = {
     // http://ntc.chinaopen.com/TennisCenterInterface/umUser/getUserInfoByOpenid.action
     pro: {
         '/api/court':{
-            target: 'http://tennis.bjofp.cn',
+            target: 'http://tennis.coopcloud.cn',
             // target: 'http://ntc.chinaopen.com',
             ws: true,
             changeOrigin: true,

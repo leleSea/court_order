@@ -4,9 +4,11 @@
 		<div class="area-box">
 			<van-button class="order-btn order-spec" type="primary" @click="orderCourt" :disabled="orderDisabled">预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderCourtInterval" >定时预定</van-button>
+			<van-button class="order-btn" type="primary" @click="orderCourtAction" >开始</van-button>
 			<van-button class="order-btn" type="primary" @click="orderCourtImmdia" >立即预定</van-button>
 			<van-button class="order-btn" type="primary" @click="orderStop" >停止</van-button>
 			<van-button class="order-btn" type="primary" @click="test" >测试</van-button>
+			<mobileCode ref="mobileCode" :userid.sync="userid" @acionEnter="orderCourtAction"></mobileCode>
 		</div>
 		<div class="time-area"></div>
         <div class="date-box">
@@ -62,7 +64,6 @@
 			</div>
 		</div>
 		<div class="code-box-as" id="codeBoxAs" ref="codeBoxAs"></div>
-		<mobileCode ref="mobileCode" :userid.sync="userid"></mobileCode>
     </div>
 </template>
 
@@ -122,8 +123,8 @@ import mobileCode from './mobileCode.vue'
 				extendsGY: extendsGY,
 				extendsK: extendsK,
 				orderStart: false,
-				minTime: 20,
-				maxTime: 22,
+				minTime: 15,
+				maxTime: 21,
 				timeNow: {
 					h: null,
 					m: null,
@@ -295,7 +296,7 @@ import mobileCode from './mobileCode.vue'
 			},
 			async tryQueryCort(num){
 				num = num || 1
-				if(num >= 8) return false
+				if(num >= 20) return false
 				// await this.courtListInit()
 				// let list = this.courtContent || []
 				// let data = list[0]
@@ -307,26 +308,42 @@ import mobileCode from './mobileCode.vue'
 				if(list) return list
 				num++
 				console.log('wait ing ing')
-				await this.timeoutPromise(500)
+				await this.timeoutPromise(1000)
 				return this.tryQueryCort(num)
 			},
 			async orderCourtInterval(){
 				await this.setTimeToOrder(0, 0, 1)
 				console.log('start order')
-				await this.timeoutPromise(500)
+				await this.timeoutPromise(100)
+				// await this.preOrder()
+				this.$refs['mobileCode'].getCode()
+
+
+				// let requestList = await this.tryQueryCort()
+				// // let requestList = this.availableCourt || []
+				// if(!requestList.length){
+				// 	console.log('没有可用的场地')
+				// 	this._errorHandle.handleRes({respMsg: '没有可用的场地'})
+				// 	// return this.orderCourtImmdia()
+				// 	return
+				// }
+				// this.orderStart = true
+				// console.log(this._dataType.deepCopy(requestList))
+				// // this.orderCourtIntervalAction(requestList)
+				// this.orderCourtIntervalAction_random(requestList)
+				
+			},
+			async orderCourtAction(){
 				let requestList = await this.tryQueryCort()
-				// let requestList = this.availableCourt || []
 				if(!requestList.length){
 					console.log('没有可用的场地')
 					this._errorHandle.handleRes({respMsg: '没有可用的场地'})
-					// return this.orderCourtImmdia()
 					return
 				}
 				this.orderStart = true
 				console.log(this._dataType.deepCopy(requestList))
 				// this.orderCourtIntervalAction(requestList)
 				this.orderCourtIntervalAction_random(requestList)
-				
 			},
 			async orderCourtIntervalAction_random(list){
 				if(!this.orderStart) return
@@ -506,11 +523,12 @@ import mobileCode from './mobileCode.vue'
 				console.log(JSON.stringify(rd))
 				
 			},
-			createOrderListControl(minTime, maxTime,){
+			createOrderListControl(minTime, maxTime){
 				let list = this._dataType.deepCopy(this.courtInfo) || {}
 				list = list.venList || []
 				// console.log(this._dataType.deepCopy(list[0]))
 				// console.log(JSON.stringify(list[0]))
+				if(!list.length) return
 				if(list[0].vname.indexOf('G') > -1){
 					console.log('enter')
 					list.shift()
@@ -737,18 +755,18 @@ import mobileCode from './mobileCode.vue'
 				let resGK = await this._court.getCourtList(params_GK)
 				let parks = this.getPark(resGK)
 				if(!this.courtStateCheck(parks)) return false
-				let resG = await this._court.getCourtList(params_G)
-				parks = parks.concat(this.getPark(resG))
-				// let parks = this.getPark(resGK).concat(this.getPark(resG))
+				// let resG = await this._court.getCourtList(params_G)
+				// parks = parks.concat(this.getPark(resG))
 				let rd = []
 				for(let i in parks){
 					let {id} = parks[i]
 					if(disabledId[id]) continue
 					rd.push(parks[i])
 				}
-				rd = this.availableCourtMethod(rd)
-				// rd = this.availableCourtMethodNew(rd)
+				// rd = this.availableCourtMethod(rd)
+				rd = this.availableCourtMethodNew(rd)
 				console.log(this._dataType.deepCopy(rd))
+				// console.log(this._dataType.deepCopy(rd))
 				return rd
 			},
 			getPark(info){
@@ -756,7 +774,7 @@ import mobileCode from './mobileCode.vue'
 				let parks = [], sortIndex = 13, f = false
 				for(let i in venList){
 					let {park, vid} = venList[i]
-					// park = this.randomList(park)
+					park = this.randomList(park)
 					if(vid == sortIndex) parks = park.concat(parks)
 					else parks = parks.concat(park)
 				}
@@ -776,7 +794,11 @@ import mobileCode from './mobileCode.vue'
 				// console.log(this._dataType.deepCopy(list))
 				// let state = this.courtStateCheck(list)
 				// console.log(state)
-				this.getorderCourtList()
+
+
+
+				// this.getorderCourtList()
+				this.preOrder()
 			},
 			courtStateCheck(list){
 				list = list || []
@@ -881,6 +903,46 @@ import mobileCode from './mobileCode.vue'
 				}
 				return orderList
 			},
+			async preOrder(){
+				let date = this.selectDateData
+				let time1 = 21, time2 = 22
+				let dateTime = `${date.year}-${date.month}-${date.day}`
+				let parkListK18 = [
+					{time: time1, parkname: 'K18', date: dateTime, parkid: 83},
+					{time: time2, parkname: 'K18', date: dateTime, parkid: 83},
+				]
+				let parkListK1 = [
+					{time: time1, parkname: 'K1', date: dateTime, parkid: 66},
+					{time: time2, parkname: 'K1', date: dateTime, parkid: 66},
+				]
+				let orderk18 = {
+					addOrderType: 'wx',
+					userid: this.userid,
+					paywaycode: this.paywaycode,
+					cardnumber: '',
+					parkList: JSON.stringify(parkListK18),
+					mobile: '',
+					ordercode: ''
+				}
+				let orderk1 = {
+					addOrderType: 'wx',
+					userid: this.userid,
+					paywaycode: this.paywaycode,
+					cardnumber: '',
+					parkList: JSON.stringify(parkListK1),
+					mobile: '',
+					ordercode: ''
+				}
+				console.log(orderk18)
+				console.log(orderk1)
+				orderk18 = await this.orderParamsPar(orderk18)
+				let res = await this._court.orderCourt(orderk18)
+				console.log(res)
+				// await this.timeoutPromise(500)
+				orderk1 = await this.orderParamsPar(orderk1)
+				res = await this._court.orderCourt(orderk1)
+				return res
+			}
         },
         created() {
 			
