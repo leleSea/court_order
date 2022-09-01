@@ -1,18 +1,25 @@
 <!--  -->
 <template>
-    <div class="approveMask" v-if="active" @click.self="close">
-        <div class="approvebg">
-            <div class="titletext">验证码</div>
-            <div class="approveDataBg">
-                <div class="approveDataTitle">手机号：</div>
-                <input class="approveDataInput" type="text" v-model="mobile" disabled="disabled">
-            </div>
-            <div class="approveDataBg">
-                <input class="approveDataInput" type="text" id="ordercode" placeholder="请输入短信验证码" v-model="code">
-                <a class="maskgetCodeBtn" ><span id="time" @click="getCode">获取验证码</span></a>
-            </div>
-            <div class="suer_btn" @click="confirm">确定</div>
+    <div class="com-mobile-box" >
+        <div class="box-normal">
+            <input type="text" class="code-outside" v-model="code" @keyup.enter="actionEnter">
+			<van-button class="order-btn" type="primary" @click="getCode" >获取验证码</van-button>
         </div>
+        <div class="approveMask"  @click.self="close" v-if="active">
+            <div class="approvebg">
+                <div class="titletext">验证码</div>
+                <div class="approveDataBg">
+                    <div class="approveDataTitle">手机号：</div>
+                    <input class="approveDataInput" type="text" v-model="mobile" disabled="disabled">
+                </div>
+                <div class="approveDataBg">
+                    <input class="approveDataInput" type="text" id="ordercode" placeholder="请输入短信验证码" v-model="code">
+                    <a class="maskgetCodeBtn" ><span id="time" @click="getCode">获取验证码</span></a>
+                </div>
+                <div class="suer_btn" @click="confirm">确定</div>
+            </div>
+        </div>
+        
     </div>
 </template>
 
@@ -36,7 +43,8 @@
                 return new Promise(success => {
                     this.response = success
                     this.active = true
-                    this.getCode()
+                    if(this.code) this.confirm()
+                    else this.getCode()
                 })
             },
             confirm(){
@@ -45,12 +53,16 @@
                 this.close()
             },
             close(){
+                this.code = null
                 this.active = false
             },
             async getCode(){
                 console.log('getCode')
                 let res = await this._court.getCode(this.mobile, this.userid)
                 res = res || {}
+            },
+            actionEnter(e){
+                this.$emit('acionEnter')
             }
         },
         created() {
